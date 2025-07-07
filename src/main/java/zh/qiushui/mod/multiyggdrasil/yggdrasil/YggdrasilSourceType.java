@@ -66,6 +66,7 @@ public enum YggdrasilSourceType {
         return source -> {
             JsonObject sourceOb = new JsonObject();
             sourceOb.addProperty("type", source.type().name());
+            sourceOb.addProperty("name", source.name());
             sessionPart.accept(source, sourceOb);
             sourceOb.addProperty("ordinal", source.ordinal());
             return sourceOb;
