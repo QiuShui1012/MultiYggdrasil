@@ -1,25 +1,31 @@
+MultiYggdrasil
+===========================
 
-Installation information
-=======
+A Minecraft mod that can make operators set multiple Yggdrasil servers.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+Config format
+===========================
+A template:
+```json5
+{  // Will be in config/multi-yggdrasil.json
+  "sources": [  // The outside array. Name must be 'sources'.
+    {  // A single source.
+      "type": "OFFICIAL",  // The type of the source. Now can be 'OFFICIAL' and 'BLESSING_SKIN' (case-insensitive.)
+      "name": "FallenBreath's Mojang API Mirror",  // The name of the source. Can be anything (maybe).
+      "sessionHost": "https://session.msp.fallenbreath.me",  // (optional) The session of sources with type 'OFFICIAL'. If not set, uses the default value (Mojang Official API).
+      "ordinal": 0  // The ordinal of the source. Controlling the order that server sending request to. Must be larger than -1.
+    },
+    {
+      "type": "OFFICIAL",
+      "name": "Mojang Official API",
+      "ordinal": 1
+    },
+    {
+      "type": "BLESSING_SKIN",
+      "name": "LittleSkin",
+      "apiRoot": "https://littleskin.cn/api/yggdrasil/",  // The root api of sources with type 'BLESSING_SKIN'.
+      "ordinal": 2
+    }
+  ]
+}
+```

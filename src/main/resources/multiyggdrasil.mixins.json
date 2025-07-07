@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "zh.qiushui.mod.multiyggdrasil.mixin",
+  "mixins": [
+    "MainMixin",
+    "ServicesMixin"
+  ],
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
