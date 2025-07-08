@@ -3,6 +3,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.96'
     id 'idea'
     id 'io.freefair.lombok' version '8.7.1'
+    id 'me.modmuss50.mod-publish-plugin' version '0.8.4'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -126,6 +127,12 @@ tasks.withType(ProcessResources).configureEach {
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties
     }
+}
+
+tasks.register('sourcesJar', Jar) {
+    from delombok.outputs.files
+    dependsOn delombok
+    archiveClassifier = "sources"
 }
 
 tasks.withType(JavaCompile).configureEach {
