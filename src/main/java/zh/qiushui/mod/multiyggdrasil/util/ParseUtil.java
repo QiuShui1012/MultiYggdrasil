@@ -27,7 +27,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import zh.qiushui.mod.multiyggdrasil.MultiYggdrasil;
-import zh.qiushui.mod.multiyggdrasil.config.InitializationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -99,7 +98,7 @@ public class ParseUtil {
                 .map(ParseUtil::parseSignaturePublicKey);
         } catch (IOException e) {
             MultiYggdrasil.LOGGER.error("Failed to fetch metadata: {}", String.valueOf(e));
-            throw new InitializationException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

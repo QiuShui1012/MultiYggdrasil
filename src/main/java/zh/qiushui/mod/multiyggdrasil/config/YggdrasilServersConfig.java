@@ -1,44 +1,39 @@
 package zh.qiushui.mod.multiyggdrasil.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.moandjiezana.toml.Toml;
+import com.moandjiezana.toml.TomlWriter;
+import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
 import zh.qiushui.mod.multiyggdrasil.MultiYggdrasil;
-import zh.qiushui.mod.multiyggdrasil.yggdrasil.IYggdrasilSource;
+import zh.qiushui.mod.multiyggdrasil.auth.BetterYggdrasilServicesKeyInfo;
+import zh.qiushui.mod.multiyggdrasil.util.ParseUtil;
+import zh.qiushui.mod.multiyggdrasil.yggdrasil.BaseYggdrasilSource;
+import zh.qiushui.mod.multiyggdrasil.yggdrasil.BlessingSkinYggdrasilSource;
+import zh.qiushui.mod.multiyggdrasil.yggdrasil.OfficialYggdrasilSource;
 import zh.qiushui.mod.multiyggdrasil.yggdrasil.YggdrasilSourceType;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Serializable;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-public record YggdrasilServersConfig(List<IYggdrasilSource> sources) implements Serializable {
-    private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("multi-yggdrasil.json");
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
+    private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("multi-yggdrasil.toml");
 
     public static void save(YggdrasilServersConfig config) {
         tryMkConfigDirs();
-        JsonObject root = new JsonObject();
-        JsonArray sources = new JsonArray();
-        for (IYggdrasilSource source : config.sources) {
-            sources.add(s(source));
-        }
-        root.add("sources", sources);
-
-        try (BufferedWriter writer = Files.newBufferedWriter(PATH)) {
-            GSON.toJson(root, writer);
+        TomlWriter writer = new TomlWriter();
+        try {
+            Map<String, Object> result = new HashMap<>();
+            for (BaseYggdrasilSource source : config.sources) {
+                result.putAll(source.serialize());
+            }
+            writer.write(result, PATH.toFile());
         } catch (IOException e) {
-            MultiYggdrasil.LOGGER.warn("Cannot save config.", e);
+            MultiYggdrasil.LOGGER.warn("Cannot save config to {}.", PATH, e);
         }
     }
 
@@ -48,43 +43,44 @@ public record YggdrasilServersConfig(List<IYggdrasilSource> sources) implements 
         }
     }
 
-    private static @NotNull JsonElement s(IYggdrasilSource source) {
-        return source.type().serialize(source);
-    }
-
     public static YggdrasilServersConfig load() {
-        JsonObject root;
-
-        try (BufferedReader reader = Files.newBufferedReader(PATH)) {
-            root = GSON.fromJson(reader, JsonObject.class);
-        } catch (IOException e) {
-            MultiYggdrasil.LOGGER.warn("Cannot load config. Use default (only mojang.)", e);
+        Toml config;
+        try {
+            config = new Toml().read(PATH.toFile());
+        } catch (IllegalStateException e) {
+            MultiYggdrasil.LOGGER.warn(
+                "Cannot load config. If you are first starting with this mod, you can ignore this warn, and finish your config in {}",
+                PATH, e
+            );
             return new YggdrasilServersConfig(List.of());
         }
 
-        JsonElement sourcesRaw = root.get("sources");
-        if (sourcesRaw instanceof JsonObject source) {
-            return new YggdrasilServersConfig(List.of(des(source)));
-        } else if (sourcesRaw instanceof JsonArray sources) {
-            List<IYggdrasilSource> sourceList = new ArrayList<>();
-            for (JsonElement source : sources) {
-                JsonObject parsing = new JsonObject();
-                if (source instanceof JsonPrimitive primitive) {
-                    parsing.add("type", primitive);
-                } else if (source instanceof JsonObject object) {
-                    parsing = object;
+        List<BaseYggdrasilSource> sourceList = new ArrayList<>();
+        for (var sourceRaw : config.entrySet()) {
+            String name = sourceRaw.getKey();
+            YggdrasilSourceType type = YggdrasilSourceType.valueOf(config.getString(name.concat(".type")).toUpperCase(Locale.ROOT));
+            int ordinal = config.getLong(name.concat(".ordinal")).intValue();
+            if (ordinal < 0) throw new IllegalArgumentException("The ordinal cannot be lesser than 0! From source " + name);
+            sourceList.add(switch (type) {
+                case OFFICIAL -> {
+                    String sessionHost = config.getString(name.concat(".sessionHost"));
+                    if (sessionHost == null) yield new OfficialYggdrasilSource(
+                        name, YggdrasilEnvironment.PROD.getEnvironment().sessionHost(), ordinal);
+                    if (sessionHost.endsWith("/")) {
+                        sessionHost = sessionHost.substring(0, sessionHost.length() - 1);
+                    }
+                    yield new OfficialYggdrasilSource(name, sessionHost, ordinal);
                 }
-                sourceList.add(des(parsing));
-            }
-            return new YggdrasilServersConfig(List.copyOf(sourceList));
-        } else {
-            MultiYggdrasil.LOGGER.warn("Cannot load config, because the format is wrong. Use default (only mojang.)");
-            return new YggdrasilServersConfig(List.of());
+                case BLESSING_SKIN -> {
+                    String apiRoot = config.getString(name.concat(".apiRoot"));
+                    if (!apiRoot.endsWith("/")) {
+                        apiRoot = apiRoot.concat("/");
+                    }
+                    ParseUtil.getPublicKey(apiRoot).ifPresent(BetterYggdrasilServicesKeyInfo.PUBLIC_KEYS::add);
+                    yield new BlessingSkinYggdrasilSource(name, apiRoot, ordinal);
+                }
+            });
         }
+        return new YggdrasilServersConfig(List.copyOf(sourceList));
     }
-
-    private static IYggdrasilSource des(JsonObject raw) throws IllegalArgumentException, ClassCastException {
-        return YggdrasilSourceType.valueOf(raw.get("type").getAsString().toUpperCase(Locale.ROOT)).deserialize(raw);
-    }
-
 }

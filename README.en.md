@@ -31,26 +31,19 @@ Same as the most part of other mods, there are only three steps:
 ## Configuration
 
 A template:
-```json5
-{  // Will be in config/multi-yggdrasil.json
-  "sources": [  // The outside array. Name must be 'sources'.
-    {  // A single source.
-      "type": "OFFICIAL",  // The type of the source. Now can be 'OFFICIAL' and 'BLESSING_SKIN' (case-insensitive.)
-      "name": "Some Random Mirror",  // The name of the source. Can be anything (maybe).
-      "sessionHost": "https://a.random.session.server.mirror/",  // (optional) The session of sources with type 'OFFICIAL'. If not set, uses the default value (Mojang Official API).
-      "ordinal": 0  // The ordinal of the source. Controlling the order that server sending request to. Must be larger than -1.
-    },
-    {
-      "type": "OFFICIAL",
-      "name": "Mojang Official API",
-      "ordinal": 1
-    },
-    {
-      "type": "BLESSING_SKIN",
-      "name": "LittleSkin",
-      "apiRoot": "https://littleskin.cn/api/yggdrasil/",  // The root api of sources with type 'BLESSING_SKIN'.
-      "ordinal": 2
-    }
-  ]
-}
+```toml
+# This config is located at config/multi-yggdrasil.toml
+[SomeRandomMirror]                       # The name, can be set freely, has no impacts.
+type = "OFFICIAL"                        # The type, now has 2 types, "OFFICIAL" and "BLESSING_SKIN".
+sessionHost = "https://a.random.mirror"  # The specific value of "OFFICIAL" type. The tail of URL *should not* has '/'.
+ordinal = 0                              # The ordinal, decided the order of use for this source
+
+[MojangOfficialAPI]
+type = "OFFICIAL"                        # When using "OFFICIAL" type, there can be no sessionHost property,
+ordinal = 1                              # and it will use the official API.
+
+[LittleSkin]
+type = "BLESSING_SKIN"                   # ↙ The specific value of "BLESSING_SKIN" type. The tail of URL *should* has '/'.
+apiRoot = "https://littleskin.cn/api/yggdrasil/"  
+ordinal = 2
 ```

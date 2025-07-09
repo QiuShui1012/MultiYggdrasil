@@ -16,7 +16,7 @@ MultiYggdrasil 是一个运行于 ~~Forge | Fabric |~~ NeoForge 的仅服务端�
 这意味着它在客户端使用局域网联机运行时某些功能可能无法正常运行，如[MC-52974](https://bugs.mojang.com/browse/MC/issues/MC-52974)。  
 它允许服务器设置多个Yggdrasil API来源，包括正版和其它外置登录。  
 配置设计参考了[MultiLogin](https://github.com/CaaMoe/MultiLogin)，
-部分代码来自[authlib-injector](https://github.com/yushijinhun/authlib-injector/)  
+部分代码来自[authlib-injector](https://github.com/yushijinhun/authlib-injector/)，遵循APGL-3.0版权。  
 ~~缝合怪~~
 
 ## 安装
@@ -31,26 +31,19 @@ Java需求跟随Minecraft版本，无需安装 `authlib-injector` ，没有任�
 ## 配置
 
 一个模板：
-```json5
-{  // 将会于 config/multi-yggdrasil.json
-  "sources": [  // 最外部的array。名称必须是“sources”。
-    {  // 一个来源。
-      "type": "OFFICIAL",  // 来源的类型。现在可为“OFFICIAL”和“BLESSING_SKIN”（大小写不敏感）。
-      "name": "Some Random Mirror",  // 来源的名称。（也许）可为任何东西。
-      "sessionHost": "https://a.random.session.server.mirror/",  // (可选) “OFFICIAL”类型下来源的session。如果不设置，则使用默认值（Mojang官方API）。
-      "ordinal": 0  // 来源的序号。控制着服务器发送请求的顺序。必须大于-1。
-    },
-    {
-      "type": "OFFICIAL",
-      "name": "Mojang Official API",
-      "ordinal": 1
-    },
-    {
-      "type": "BLESSING_SKIN",
-      "name": "LittleSkin",
-      "apiRoot": "https://littleskin.cn/api/yggdrasil/",  // “BLESSING_SKIN”类型下来源的根API网址。
-      "ordinal": 2
-    }
-  ]
-}
+```toml
+# 该配置路径位于 config/multi-yggdrasil.toml
+[SomeRandomMirror]                       # 名称，可随意设置，无影响
+type = "OFFICIAL"                        # 类型，目前支持“OFFICIAL”和“BLESSING_SKIN”
+sessionHost = "https://a.random.mirror"  # “OFFICIAL”类型的特定值，URL结尾*不应有*/，但是有也可以
+ordinal = 0                              # 序号，决定了该来源的使用顺序
+
+[MojangOfficialAPI]
+type = "OFFICIAL"                        # “OFFICIAL”类型可以没有sessionHost属性值，此时会使用官方API
+ordinal = 1
+
+[LittleSkin]
+type = "BLESSING_SKIN"                   # ↙ “BLESSING_SKIN”类型的特定值，URL结尾*应有*/，但是没有也可以
+apiRoot = "https://littleskin.cn/api/yggdrasil/"  
+ordinal = 2
 ```

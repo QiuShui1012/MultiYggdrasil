@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -117,10 +116,8 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
             arguments.put("ip", address.getHostAddress());
         }
 
-        final List<URL> urls = Lists.transform(
-            checkUrls, checkUrl -> HttpAuthenticationService.concatenateURL(checkUrl, HttpAuthenticationService.buildQuery(arguments)));
-
-        for (URL url : urls) {
+        for (URL url : checkUrls) {
+            url = HttpAuthenticationService.concatenateURL(url, HttpAuthenticationService.buildQuery(arguments));
             Optional<ProfileResult> resultOp = this.singleHasJoinedServer(profileName, url);
             if (resultOp.isEmpty()) continue;
             return resultOp.get();
@@ -220,14 +217,23 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
     @Nullable
     private ProfileResult fetchProfileUncached(final UUID profileId, final boolean requireSecure) {
+        for (String baseUrl : baseUrls) {
+            Optional<ProfileResult> resultOp = singleFetchProfileUncached(baseUrl, profileId, requireSecure);
+            if (resultOp.isPresent()) return resultOp.get();
+        }
+        LOGGER.warn("Couldn't look up profile properties for {}", profileId);
+        return null;
+    }
+
+    private Optional<ProfileResult> singleFetchProfileUncached(final String baseUrl, final UUID profileId, final boolean requireSecure) {
         try {
-            URL url = HttpAuthenticationService.constantURL(baseUrls + "profile/" + UndashedUuid.toString(profileId));
+            URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UndashedUuid.toString(profileId));
             url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
 
             final MinecraftProfilePropertiesResponse response = client.get(url, MinecraftProfilePropertiesResponse.class);
             if (response == null) {
                 LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
-                return null;
+                return Optional.empty();
             }
 
             final GameProfile profile = response.toProfile();
@@ -236,10 +242,10 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
                 .collect(Collectors.toSet());
 
             LOGGER.debug("Successfully fetched profile properties for {}", profile);
-            return new ProfileResult(profile, profileActions);
+            return Optional.of(new ProfileResult(profile, profileActions));
         } catch (final MinecraftClientException | IllegalArgumentException e) {
-            LOGGER.warn("Couldn't look up profile properties for {}", profileId, e);
-            return null;
+            LOGGER.warn("Couldn't look up profile properties for {} on url {}.", profileId, baseUrl, e);
+            return Optional.empty();
         }
     }
 }

@@ -20,6 +20,7 @@ group = mod_group_id
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 base.archivesName = mod_id
@@ -103,7 +104,10 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    implementation(jarJar("org.yaml:snakeyaml:1.33"))
+    jarJar(api('com.moandjiezana.toml:toml4j:0.7.2')) {
+        exclude group: "com.google.code.gson", module: "gson"
+    }
+    additionalRuntimeClasspath 'com.moandjiezana.toml:toml4j:0.7.2'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
