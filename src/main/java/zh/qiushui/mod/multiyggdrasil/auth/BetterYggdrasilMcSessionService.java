@@ -106,7 +106,9 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
     @Override
     @Nullable
-    public ProfileResult hasJoinedServer(final String profileName, final String serverId, @Nullable final InetAddress address) throws AuthenticationUnavailableException {
+    public ProfileResult hasJoinedServer(
+        final String profileName, final String serverId, @Nullable final InetAddress address
+    ) throws AuthenticationUnavailableException {
         final Map<String, Object> arguments = new HashMap<>();
 
         arguments.put("username", profileName);
@@ -128,20 +130,17 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
     private Optional<ProfileResult> singleHasJoinedServer(final String profileName, URL url) throws AuthenticationUnavailableException {
         try {
             final HasJoinedMinecraftServerResponse response = client.get(url, HasJoinedMinecraftServerResponse.class);
-            if (response != null && response.id() != null) {
-                final GameProfile result = new GameProfile(response.id(), profileName);
+            if (response == null || response.id() == null) return Optional.empty();
+            final GameProfile result = new GameProfile(response.id(), profileName);
 
-                if (response.properties() != null) {
-                    result.getProperties().putAll(response.properties());
-                }
-
-                final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                    .map(ProfileAction::type)
-                    .collect(Collectors.toSet());
-                return Optional.of(new ProfileResult(result, profileActions));
-            } else {
-                return Optional.empty();
+            if (response.properties() != null) {
+                result.getProperties().putAll(response.properties());
             }
+
+            final Set<ProfileActionType> profileActions = response.profileActions().stream()
+                .map(ProfileAction::type)
+                .collect(Collectors.toSet());
+            return Optional.of(new ProfileResult(result, profileActions));
         } catch (final MinecraftClientException e) {
             if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
                 throw unavailable;
@@ -197,10 +196,9 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
     @Override
     public String getSecurePropertyValue(final Property property) throws InsecurePublicKeyException {
         return switch (getPropertySignatureState(property)) {
-            case UNSIGNED ->
-                throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
-            case INVALID ->
-                throw new InsecurePublicKeyException.InvalidException("Property \"" + property.name() + "\" has been tampered with (signature invalid)");
+            case UNSIGNED -> throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
+            case INVALID -> throw new InsecurePublicKeyException.InvalidException(
+                "Property \"" + property.name() + "\" has been tampered with (signature invalid)");
             case SIGNED -> property.value();
         };
     }

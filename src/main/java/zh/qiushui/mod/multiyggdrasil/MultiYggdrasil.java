@@ -1,11 +1,9 @@
 package zh.qiushui.mod.multiyggdrasil;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.LevelEvent;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import zh.qiushui.mod.multiyggdrasil.config.YggdrasilServersConfig;
 
@@ -15,8 +13,8 @@ public class MultiYggdrasil {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final YggdrasilServersConfig SERVERS_CONFIG = YggdrasilServersConfig.load();
 
-    public MultiYggdrasil(IEventBus ignored, ModContainer ignored1) {
-        NeoForge.EVENT_BUS.addListener(MultiYggdrasil::onServerSave);
+    public MultiYggdrasil(FMLJavaModLoadingContext ignored) {
+        LevelEvent.Save.BUS.addListener(MultiYggdrasil::onServerSave);
     }
 
     private static void onServerSave(LevelEvent.Save event) {

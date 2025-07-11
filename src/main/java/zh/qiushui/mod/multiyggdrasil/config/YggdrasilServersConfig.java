@@ -3,7 +3,7 @@ package zh.qiushui.mod.multiyggdrasil.config;
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 import zh.qiushui.mod.multiyggdrasil.MultiYggdrasil;
 import zh.qiushui.mod.multiyggdrasil.auth.BetterYggdrasilServicesKeyInfo;
 import zh.qiushui.mod.multiyggdrasil.util.ParseUtil;

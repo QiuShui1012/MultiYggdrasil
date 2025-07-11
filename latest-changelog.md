@@ -1,9 +1,7 @@
 ## What's new
-- **Supported more versions**  
-  It just validated the usability of other versions
+- **Supported Forge 1.20.2+**
 
 ****************************************
 
 ## 新更改
-- **支持了更多版本**  
-  其实只是验证了其它版本的可使用性
+- **支持了Forge 1.20.2+**
