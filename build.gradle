@@ -234,7 +234,7 @@ publishMods {
         projectSlug = "multiyggdrasil"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.addAll(minecraft_versions.split(","))
-        displayName = mod_version
+        displayName = version
     }
     modrinth {
         projectId = "LstvoJcB"
@@ -246,7 +246,7 @@ publishMods {
         repository = "QiuShui1012/MultiYggdrasil"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         commitish = "forge-1.20.2+"
-        displayName = project.version
-        tagName = project.version
+        displayName = version
+        tagName = version
     }
 }
