@@ -245,7 +245,7 @@ publishMods {
     github {
         repository = "QiuShui1012/MultiYggdrasil"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = "forge-1.20.2+"
+        commitish = "forge-1.20.2-"
         displayName = version
         tagName = version
     }

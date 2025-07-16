@@ -43,8 +43,8 @@ public class BetterYggdrasilServicesKeyInfo implements ServicesKeyInfo {
 
     @Override
     public boolean validateProperty(Property property) {
-        byte[] data = property.value().getBytes();
-        byte[] sig = Base64.getDecoder().decode(property.signature());
+        byte[] data = property.getValue().getBytes();
+        byte[] sig = Base64.getDecoder().decode(property.getSignature());
 
         for (PublicKey key : PUBLIC_KEYS) try {
             Signature signature = Signature.getInstance("SHA1withRSA");

@@ -5,9 +5,10 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.StringJoiner;
 
 @Getter
-public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSource> {
+public abstract class BaseYggdrasilSource implements Environment, Comparable<BaseYggdrasilSource> {
     protected final String name;
     protected final int ordinal;
 
@@ -18,16 +19,27 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
 
     public abstract YggdrasilSourceType getType();
 
-    public abstract String getSessionRoot();
-
     public abstract Map<String, Object> serialize();
+
+    @Override
+    public String getServicesHost() {
+        throw new UnsupportedOperationException(
+            "For compatibility, we do not use services host in MultiYggdrasil. Please check your codes."
+        );
+    }
+
+    @Override
+    public String asString() {
+        return new StringJoiner(", ", "", "")
+            .add("authHost='" + getAuthHost() + "'")
+            .add("accountsHost='" + getAccountsHost() + "'")
+            .add("sessionHost='" + getSessionHost() + "'")
+            .add("name='" + getName() + "'")
+            .toString();
+    }
 
     @Override
     public int compareTo(@NotNull BaseYggdrasilSource o) {
         return Integer.compare(ordinal, o.ordinal);
-    }
-
-    public Environment toEnvironment() {
-        return new Environment(this.getSessionRoot(), null, this.getName());
     }
 }

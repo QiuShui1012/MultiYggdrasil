@@ -63,13 +63,28 @@ public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
             if (ordinal < 0) throw new IllegalArgumentException("The ordinal cannot be lesser than 0! From source " + name);
             sourceList.add(switch (type) {
                 case OFFICIAL -> {
+                    String authHost = config.getString(name.concat(".authHost"));
+                    if (authHost == null) {
+                        authHost = YggdrasilEnvironment.PROD.getEnvironment().getAuthHost();
+                    }
+                    if (authHost.endsWith("/")) {
+                        authHost = authHost.substring(0, authHost.length() - 1);
+                    }
+                    String accountsHost = config.getString(name.concat(".accountsHost"));
+                    if (accountsHost == null) {
+                        accountsHost = YggdrasilEnvironment.PROD.getEnvironment().getAccountsHost();
+                    }
+                    if (accountsHost.endsWith("/")) {
+                        accountsHost = accountsHost.substring(0, accountsHost.length() - 1);
+                    }
                     String sessionHost = config.getString(name.concat(".sessionHost"));
-                    if (sessionHost == null) yield new OfficialYggdrasilSource(
-                        name, YggdrasilEnvironment.PROD.getEnvironment().sessionHost(), ordinal);
+                    if (sessionHost == null) {
+                        sessionHost = YggdrasilEnvironment.PROD.getEnvironment().getSessionHost();
+                    }
                     if (sessionHost.endsWith("/")) {
                         sessionHost = sessionHost.substring(0, sessionHost.length() - 1);
                     }
-                    yield new OfficialYggdrasilSource(name, sessionHost, ordinal);
+                    yield new OfficialYggdrasilSource(name, authHost, accountsHost, sessionHost, ordinal);
                 }
                 case BLESSING_SKIN -> {
                     String apiRoot = config.getString(name.concat(".apiRoot"));

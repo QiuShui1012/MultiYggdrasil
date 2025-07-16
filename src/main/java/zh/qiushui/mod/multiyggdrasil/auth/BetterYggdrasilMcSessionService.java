@@ -10,34 +10,27 @@ import com.google.gson.JsonParseException;
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.HttpAuthenticationService;
-import com.mojang.authlib.SignatureState;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
-import com.mojang.authlib.exceptions.MinecraftClientException;
+import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTextures;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.yggdrasil.ProfileActionType;
-import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.authlib.yggdrasil.ServicesKeyType;
+import com.mojang.authlib.yggdrasil.TextureUrlChecker;
 import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import com.mojang.authlib.yggdrasil.response.MinecraftProfilePropertiesResponse;
 import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
-import com.mojang.authlib.yggdrasil.response.ProfileAction;
+import com.mojang.authlib.yggdrasil.response.Response;
 import com.mojang.util.UUIDTypeAdapter;
-import com.mojang.util.UndashedUuid;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.net.InetAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -45,37 +38,30 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
-public class BetterYggdrasilMcSessionService implements MinecraftSessionService {
+public class BetterYggdrasilMcSessionService extends HttpMinecraftSessionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BetterYggdrasilMcSessionService.class);
-    private final MinecraftClient client;
-    private final ServicesKeySet servicesKeySet;
     private final List<String> baseUrls = new ArrayList<>();
     private final List<URL> joinUrls = new ArrayList<>();
     private final List<URL> checkUrls = new ArrayList<>();
 
     private final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-    private final LoadingCache<UUID, Optional<ProfileResult>> insecureProfiles = CacheBuilder
+    private final LoadingCache<GameProfile, GameProfile> insecureProfiles = CacheBuilder
         .newBuilder()
         .expireAfterWrite(6, TimeUnit.HOURS)
         .build(new CacheLoader<>() {
             @Override
-            public @NotNull Optional<ProfileResult> load(final @NotNull UUID key) {
-                return Optional.ofNullable(fetchProfileUncached(key, false));
+            public @NotNull GameProfile load(@NotNull final GameProfile key) {
+                return fillGameProfile(key, false);
             }
         });
 
-    public BetterYggdrasilMcSessionService(final ServicesKeySet servicesKeySet, final Proxy proxy, final List<Environment> envs) {
-        client = MinecraftClient.unauthenticated(proxy);
-        this.servicesKeySet = servicesKeySet;
+    public BetterYggdrasilMcSessionService(final BetterYggdrasilAuthService service, List<Environment> envs) {
+        super(service);
         for (Environment env : envs) {
-            String baseUrl = env.sessionHost() + "/session/minecraft/";
+            String baseUrl = env.getSessionHost() + "/session/minecraft/";
             baseUrls.add(baseUrl);
 
             joinUrls.add(HttpAuthenticationService.constantURL(baseUrl + "join"));
@@ -84,34 +70,24 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
     }
 
     @Override
-    public void joinServer(final UUID profileId, final String authToken, final String serverId) throws AuthenticationException {
-        final JoinMinecraftServerRequest request = new JoinMinecraftServerRequest(authToken, profileId, serverId);
+    public void joinServer(
+        final GameProfile profile, final String authenticationToken, final String serverId) throws AuthenticationException {
+        final JoinMinecraftServerRequest request = new JoinMinecraftServerRequest();
+        request.accessToken = authenticationToken;
+        request.selectedProfile = profile.getId();
+        request.serverId = serverId;
 
-        AtomicReference<MinecraftClientException> e = new AtomicReference<>();
-        for (URL joinUrl : joinUrls) {
-            if (singleJoinServer(request, joinUrl, e)) return;
-        }
-        throw e.get().toAuthenticationException();
-    }
-
-    private boolean singleJoinServer(JoinMinecraftServerRequest request, URL joinUrl, AtomicReference<MinecraftClientException> eR) {
-        try {
-            client.post(joinUrl, request, Void.class);
-        } catch (final MinecraftClientException e) {
-            eR.set(e);
-            return false;
-        }
-        return true;
+        getAuthenticationService().makeRequest(joinUrls, request, Response.class);
     }
 
     @Override
     @Nullable
-    public ProfileResult hasJoinedServer(
-        final String profileName, final String serverId, @Nullable final InetAddress address
+    public GameProfile hasJoinedServer(
+        final GameProfile user, final String serverId, final InetAddress address
     ) throws AuthenticationUnavailableException {
         final Map<String, Object> arguments = new HashMap<>();
 
-        arguments.put("username", profileName);
+        arguments.put("username", user.getName());
         arguments.put("serverId", serverId);
 
         if (address != null) {
@@ -120,131 +96,120 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
         for (URL url : checkUrls) {
             url = HttpAuthenticationService.concatenateURL(url, HttpAuthenticationService.buildQuery(arguments));
-            Optional<ProfileResult> resultOp = this.singleHasJoinedServer(profileName, url);
-            if (resultOp.isEmpty()) continue;
-            return resultOp.get();
+            try {
+                final HasJoinedMinecraftServerResponse response = getAuthenticationService().makeRequest(
+                    url, null, HasJoinedMinecraftServerResponse.class);
+
+                if (response == null || response.getId() == null) continue;
+                final GameProfile result = new GameProfile(response.getId(), user.getName());
+
+                if (response.getProperties() != null) {
+                    result.getProperties().putAll(response.getProperties());
+                }
+
+                return result;
+            } catch (final AuthenticationUnavailableException e) {
+                throw e;
+            } catch (final AuthenticationException ignored) {
+            }
         }
         return null;
     }
 
-    private Optional<ProfileResult> singleHasJoinedServer(final String profileName, URL url) throws AuthenticationUnavailableException {
-        try {
-            final HasJoinedMinecraftServerResponse response = client.get(url, HasJoinedMinecraftServerResponse.class);
-            if (response == null || response.id() == null) return Optional.empty();
-            final GameProfile result = new GameProfile(response.id(), profileName);
+    @Override
+    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(
+        final GameProfile profile, final boolean requireSecure) throws InsecurePublicKeyException {
+        final Property textureProperty = Iterables.getFirst(profile.getProperties().get("textures"), null);
 
-            if (response.properties() != null) {
-                result.getProperties().putAll(response.properties());
-            }
-
-            final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                .map(ProfileAction::type)
-                .collect(Collectors.toSet());
-            return Optional.of(new ProfileResult(result, profileActions));
-        } catch (final MinecraftClientException e) {
-            if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
-                throw unavailable;
-            }
-            return Optional.empty();
+        if (textureProperty == null) {
+            return new HashMap<>();
         }
-    }
 
-    @Nullable
-    @Override
-    public Property getPackedTextures(final GameProfile profile) {
-        return Iterables.getFirst(profile.getProperties().get("textures"), null);
-    }
-
-    @Override
-    public MinecraftProfileTextures unpackTextures(final Property packedTextures) {
-        final String value = packedTextures.value();
-        final SignatureState signatureState = getPropertySignatureState(packedTextures);
+        final String value = requireSecure ? getSecurePropertyValue(textureProperty) : textureProperty.getValue();
 
         final MinecraftTexturesPayload result;
         try {
             final String json = new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
             result = gson.fromJson(json, MinecraftTexturesPayload.class);
-        } catch (final JsonParseException | IllegalArgumentException e) {
+        } catch (final JsonParseException e) {
             LOGGER.error("Could not decode textures payload", e);
-            return MinecraftProfileTextures.EMPTY;
+            return new HashMap<>();
         }
 
-        if (result == null || result.textures() == null || result.textures().isEmpty()) {
-            return MinecraftProfileTextures.EMPTY;
+        if (result == null || result.getTextures() == null) {
+            return new HashMap<>();
         }
 
-        final Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = result.textures();
+        for (final Map.Entry<MinecraftProfileTexture.Type, MinecraftProfileTexture> entry : result.getTextures().entrySet()) {
+            final String url = entry.getValue().getUrl();
+            if (!TextureUrlChecker.isAllowedTextureDomain(url)) {
+                LOGGER.error("Textures payload contains blocked domain: {}", url);
+                return new HashMap<>();
+            }
+        }
 
-        return new MinecraftProfileTextures(
-            textures.get(MinecraftProfileTexture.Type.SKIN),
-            textures.get(MinecraftProfileTexture.Type.CAPE),
-            textures.get(MinecraftProfileTexture.Type.ELYTRA),
-            signatureState
-        );
+        return result.getTextures();
     }
 
-    @Nullable
     @Override
-    public ProfileResult fetchProfile(final UUID profileId, final boolean requireSecure) {
-        if (!requireSecure) {
-            return insecureProfiles.getUnchecked(profileId).orElse(null);
+    public GameProfile fillProfileProperties(final GameProfile profile, final boolean requireSecure) {
+        if (profile.getId() == null) {
+            return profile;
         }
 
-        return fetchProfileUncached(profileId, true);
+        if (!requireSecure) {
+            return insecureProfiles.getUnchecked(profile);
+        }
+
+        return fillGameProfile(profile, true);
     }
 
     @Override
     public String getSecurePropertyValue(final Property property) throws InsecurePublicKeyException {
-        return switch (getPropertySignatureState(property)) {
-            case UNSIGNED -> throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
-            case INVALID -> throw new InsecurePublicKeyException.InvalidException(
-                "Property \"" + property.name() + "\" has been tampered with (signature invalid)");
-            case SIGNED -> property.value();
-        };
-    }
-
-    private SignatureState getPropertySignatureState(final Property property) {
         if (!property.hasSignature()) {
-            return SignatureState.UNSIGNED;
+            LOGGER.error("Signature is missing from Property {}", property.getName());
+            throw new InsecurePublicKeyException.MissingException();
         }
+
+        final ServicesKeySet servicesKeySet = getAuthenticationService().getServicesKeySet();
         if (servicesKeySet.keys(ServicesKeyType.PROFILE_PROPERTY).stream().noneMatch(key -> key.validateProperty(property))) {
-            return SignatureState.INVALID;
+            LOGGER.error("Property {} has been tampered with (signature invalid)", property.getName());
+            throw new InsecurePublicKeyException.InvalidException("Property has been tampered with (signature invalid)");
         }
-        return SignatureState.SIGNED;
+
+        return property.getValue();
     }
 
-    @Nullable
-    private ProfileResult fetchProfileUncached(final UUID profileId, final boolean requireSecure) {
+    private GameProfile fillGameProfile(final GameProfile profile, final boolean requireSecure) {
         for (String baseUrl : baseUrls) {
-            Optional<ProfileResult> resultOp = singleFetchProfileUncached(baseUrl, profileId, requireSecure);
-            if (resultOp.isPresent()) return resultOp.get();
+            try {
+                URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UUIDTypeAdapter.fromUUID(profile.getId()));
+                url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
+                final MinecraftProfilePropertiesResponse response = getAuthenticationService().makeRequest(
+                    url, null, MinecraftProfilePropertiesResponse.class);
+
+                if (response == null) {
+                    LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profile);
+                    return profile;
+                } else {
+                    final GameProfile result = new GameProfile(response.getId(), response.getName());
+                    result.getProperties().putAll(response.getProperties());
+                    profile.getProperties().putAll(response.getProperties());
+
+                    LOGGER.debug("Successfully fetched profile properties for {}", result);
+                    return result;
+                }
+            } catch (final AuthenticationException | IllegalArgumentException e) {
+                LOGGER.warn("Couldn't look up profile properties for {} on url {}.", profile.getId(), baseUrl, e);
+            }
         }
-        LOGGER.warn("Couldn't look up profile properties for {}", profileId);
-        return null;
+        LOGGER.warn("Couldn't look up profile properties for {}", profile.getId());
+        return profile;
     }
 
-    private Optional<ProfileResult> singleFetchProfileUncached(final String baseUrl, final UUID profileId, final boolean requireSecure) {
-        try {
-            URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UndashedUuid.toString(profileId));
-            url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
-
-            final MinecraftProfilePropertiesResponse response = client.get(url, MinecraftProfilePropertiesResponse.class);
-            if (response == null) {
-                LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
-                return Optional.empty();
-            }
-
-            final GameProfile profile = response.toProfile();
-            final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                .map(ProfileAction::type)
-                .collect(Collectors.toSet());
-
-            LOGGER.debug("Successfully fetched profile properties for {}", profile);
-            return Optional.of(new ProfileResult(profile, profileActions));
-        } catch (final MinecraftClientException | IllegalArgumentException e) {
-            LOGGER.warn("Couldn't look up profile properties for {} on url {}.", profileId, baseUrl, e);
-            return Optional.empty();
-        }
+    @Override
+    public BetterYggdrasilAuthService getAuthenticationService() {
+        return (BetterYggdrasilAuthService) super.getAuthenticationService();
     }
 }
 

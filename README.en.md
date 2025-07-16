@@ -35,6 +35,8 @@ A template:
 # This config is located at config/multi-yggdrasil.toml
 [SomeRandomMirror]                       # The name, can be set freely, has no impacts.
 type = "OFFICIAL"                        # The type, now has 2 types, "OFFICIAL" and "BLESSING_SKIN".
+authHost = "https://a.random.mirror"     # (1.20.2-) The specific value of "OFFICIAL" type. The tail of URL *should not* has '/'.
+accountsHost = "https://a.random.mirror" # (1.20.3-) The specific value of "OFFICIAL" type. The tail of URL *should not* has '/'.
 sessionHost = "https://a.random.mirror"  # The specific value of "OFFICIAL" type. The tail of URL *should not* has '/'.
 ordinal = 0                              # The ordinal, decided the order of use for this source
 
@@ -47,3 +49,8 @@ type = "BLESSING_SKIN"                   # ↙ The specific value of "BLESSING_S
 apiRoot = "https://littleskin.cn/api/yggdrasil/"  
 ordinal = 2
 ```
+
+## Version Supporting
+1.19.1-: Accept supporting requests. If there are no requests, we will not do any tests, fix bugs, or porting.  
+1.19.1+: LTS.  
+
