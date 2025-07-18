@@ -227,6 +227,7 @@ publishMods {
     changelog = file("latest-changelog.md").text
     type = STABLE
     modLoaders.add("forge")
+    modLoaders.add("neoforge")
 
     curseforge {
         projectId = "1303093"
