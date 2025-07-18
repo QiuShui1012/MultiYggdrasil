@@ -1,6 +1,7 @@
 package zh.qiushui.mod.multiyggdrasil;
 
 import com.mojang.logging.LogUtils;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -14,7 +15,7 @@ public class MultiYggdrasil {
     public static final YggdrasilServersConfig SERVERS_CONFIG = YggdrasilServersConfig.load();
 
     public MultiYggdrasil(FMLJavaModLoadingContext ignored) {
-        LevelEvent.Save.BUS.addListener(MultiYggdrasil::onServerSave);
+        MinecraftForge.EVENT_BUS.addListener(MultiYggdrasil::onServerSave);
     }
 
     private static void onServerSave(LevelEvent.Save event) {

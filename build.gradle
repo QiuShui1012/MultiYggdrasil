@@ -81,7 +81,7 @@ minecraft {
             // Recommended for development - enables more descriptive errors at the cost of slower startup and registration.
             property 'eventbus.api.strictRuntimeChecks', 'true'
 
-//            arg "-mixin.config=${mod_id}.mixins.json"
+            arg "-mixin.config=${mod_id}.mixins.json"
         }
 
         client {
@@ -117,15 +117,11 @@ repositories {
         name = 'Minecraft libraries'
         url = 'https://libraries.minecraft.net'
     }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
-            }
-        }
-        filter {
-            includeGroupAndSubgroups('org.spongepowered')
+    maven {
+        name = 'Sponge'
+        url = 'https://repo.spongepowered.org/repository/maven-public'
+        content {
+            includeGroupAndSubgroups 'org.spongepowered'
         }
     }
 }
@@ -143,7 +139,7 @@ dependencies {
     // Forge 1.21.6+ uses EventBus 7, which shifts most of its runtime validation to compile-time via an annotation processor
     // to improve performance in production environments. This line is required to enable said compile-time validation
     // in your development environment, helping you catch issues early.
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
+    //annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     minecraftLibrary 'com.moandjiezana.toml:toml4j:0.7.2'
