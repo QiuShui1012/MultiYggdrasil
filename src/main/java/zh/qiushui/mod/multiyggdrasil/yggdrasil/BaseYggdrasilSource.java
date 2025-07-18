@@ -18,7 +18,9 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
 
     public abstract YggdrasilSourceType getType();
 
-    public abstract String getSessionRoot();
+    public abstract String getAccountsHost();
+
+    public abstract String getSessionHost();
 
     public abstract Map<String, Object> serialize();
 
@@ -28,6 +30,6 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
     }
 
     public Environment toEnvironment() {
-        return new Environment(this.getSessionRoot(), null, this.getName());
+        return new Environment(this.getAccountsHost(), this.getSessionHost(), null, this.getName());
     }
 }

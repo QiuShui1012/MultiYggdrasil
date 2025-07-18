@@ -1,7 +1,7 @@
 ## What's new
-- **Ported code optimization from forge-1.20.2-**
+- **Special support for NeoForge 1.20.2**
 
 ****************************************
 
 ## 新更改
-- **从Forge 1.20.2-移植了代码优化**
+- **为NeoForge 1.20.2做了特殊支持**
