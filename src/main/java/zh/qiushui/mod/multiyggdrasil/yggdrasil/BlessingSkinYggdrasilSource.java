@@ -16,7 +16,12 @@ public class BlessingSkinYggdrasilSource extends BaseYggdrasilSource {
     }
 
     @Override
-    public String getSessionRoot() {
+    public String getAccountsHost() {
+        return this.apiRoot + "api";
+    }
+
+    @Override
+    public String getSessionHost() {
         return this.apiRoot + "sessionserver";
     }
 

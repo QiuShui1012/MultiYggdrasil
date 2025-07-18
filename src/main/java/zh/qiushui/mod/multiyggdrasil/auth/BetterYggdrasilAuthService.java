@@ -5,12 +5,12 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.EnvironmentParser;
 import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
-import com.mojang.authlib.yggdrasil.YggdrasilGameProfileRepository;
 import com.mojang.authlib.yggdrasil.YggdrasilUserApiService;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
@@ -59,11 +59,11 @@ public class BetterYggdrasilAuthService extends YggdrasilAuthenticationService {
 
     @Override
     public GameProfileRepository createProfileRepository() {
-        return new YggdrasilGameProfileRepository(getProxy(), servicesEnv);
+        return new BetterYggdrasilGameProfileRepo(getProxy(), environments);
     }
 
     @Override
-    public UserApiService createUserApiService(final String accessToken) {
+    public UserApiService createUserApiService(final String accessToken) throws AuthenticationException {
         return new YggdrasilUserApiService(accessToken, getProxy(), servicesEnv);
     }
 }

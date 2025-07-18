@@ -15,10 +15,10 @@ import zh.qiushui.mod.multiyggdrasil.yggdrasil.YggdrasilSourceType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("multi-yggdrasil.toml");
@@ -27,7 +27,7 @@ public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
         tryMkConfigDirs();
         TomlWriter writer = new TomlWriter();
         try {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new TreeMap<>();
             for (BaseYggdrasilSource source : config.sources) {
                 result.putAll(source.serialize());
             }
@@ -63,13 +63,21 @@ public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
             if (ordinal < 0) throw new IllegalArgumentException("The ordinal cannot be lesser than 0! From source " + name);
             sourceList.add(switch (type) {
                 case OFFICIAL -> {
+                    String accountsHost = config.getString(name.concat(".accountsHost"));
+                    if (accountsHost == null) {
+                        accountsHost = YggdrasilEnvironment.PROD.getEnvironment().accountsHost();
+                    }
+                    if (accountsHost.endsWith("/")) {
+                        accountsHost = accountsHost.substring(0, accountsHost.length() - 1);
+                    }
                     String sessionHost = config.getString(name.concat(".sessionHost"));
-                    if (sessionHost == null) yield new OfficialYggdrasilSource(
-                        name, YggdrasilEnvironment.PROD.getEnvironment().sessionHost(), ordinal);
+                    if (sessionHost == null) {
+                        sessionHost = YggdrasilEnvironment.PROD.getEnvironment().sessionHost();
+                    }
                     if (sessionHost.endsWith("/")) {
                         sessionHost = sessionHost.substring(0, sessionHost.length() - 1);
                     }
-                    yield new OfficialYggdrasilSource(name, sessionHost, ordinal);
+                    yield new OfficialYggdrasilSource(name, accountsHost, sessionHost, ordinal);
                 }
                 case BLESSING_SKIN -> {
                     String apiRoot = config.getString(name.concat(".apiRoot"));

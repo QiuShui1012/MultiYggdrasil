@@ -10,13 +10,11 @@ import com.google.gson.JsonParseException;
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.HttpAuthenticationService;
-import com.mojang.authlib.SignatureState;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.exceptions.MinecraftClientException;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.authlib.properties.Property;
@@ -24,6 +22,7 @@ import com.mojang.authlib.yggdrasil.ProfileActionType;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.authlib.yggdrasil.ServicesKeyType;
+import com.mojang.authlib.yggdrasil.TextureUrlChecker;
 import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import com.mojang.authlib.yggdrasil.response.MinecraftProfilePropertiesResponse;
@@ -137,38 +136,38 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
         return null;
     }
 
-    @Nullable
     @Override
-    public Property getPackedTextures(final GameProfile profile) {
-        return Iterables.getFirst(profile.getProperties().get("textures"), null);
-    }
+    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(final GameProfile profile, final boolean requireSecure) throws InsecurePublicKeyException {
+        final Property textureProperty = Iterables.getFirst(profile.getProperties().get("textures"), null);
 
-    @Override
-    public MinecraftProfileTextures unpackTextures(final Property packedTextures) {
-        final String value = packedTextures.value();
-        final SignatureState signatureState = getPropertySignatureState(packedTextures);
+        if (textureProperty == null) {
+            return new HashMap<>();
+        }
+
+        final String value = requireSecure ? getSecurePropertyValue(textureProperty) : textureProperty.value();
 
         final MinecraftTexturesPayload result;
         try {
             final String json = new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
             result = gson.fromJson(json, MinecraftTexturesPayload.class);
-        } catch (final JsonParseException | IllegalArgumentException e) {
+        } catch (final JsonParseException e) {
             LOGGER.error("Could not decode textures payload", e);
-            return MinecraftProfileTextures.EMPTY;
+            return new HashMap<>();
         }
 
-        if (result == null || result.textures() == null || result.textures().isEmpty()) {
-            return MinecraftProfileTextures.EMPTY;
+        if (result == null || result.textures() == null) {
+            return new HashMap<>();
         }
 
-        final Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = result.textures();
+        for (final Map.Entry<MinecraftProfileTexture.Type, MinecraftProfileTexture> entry : result.textures().entrySet()) {
+            final String url = entry.getValue().getUrl();
+            if (!TextureUrlChecker.isAllowedTextureDomain(url)) {
+                LOGGER.error("Textures payload contains blocked domain: {}", url);
+                return new HashMap<>();
+            }
+        }
 
-        return new MinecraftProfileTextures(
-            textures.get(MinecraftProfileTexture.Type.SKIN),
-            textures.get(MinecraftProfileTexture.Type.CAPE),
-            textures.get(MinecraftProfileTexture.Type.ELYTRA),
-            signatureState
-        );
+        return result.textures();
     }
 
     @Nullable
@@ -183,22 +182,17 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
     @Override
     public String getSecurePropertyValue(final Property property) throws InsecurePublicKeyException {
-        return switch (getPropertySignatureState(property)) {
-            case UNSIGNED -> throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
-            case INVALID -> throw new InsecurePublicKeyException.InvalidException(
-                "Property \"" + property.name() + "\" has been tampered with (signature invalid)");
-            case SIGNED -> property.value();
-        };
-    }
-
-    private SignatureState getPropertySignatureState(final Property property) {
         if (!property.hasSignature()) {
-            return SignatureState.UNSIGNED;
+            LOGGER.error("Signature is missing from Property {}", property.name());
+            throw new InsecurePublicKeyException.MissingException();
         }
+
         if (servicesKeySet.keys(ServicesKeyType.PROFILE_PROPERTY).stream().noneMatch(key -> key.validateProperty(property))) {
-            return SignatureState.INVALID;
+            LOGGER.error("Property {} has been tampered with (signature invalid)", property.name());
+            throw new InsecurePublicKeyException.InvalidException("Property has been tampered with (signature invalid)");
         }
-        return SignatureState.SIGNED;
+
+        return property.value();
     }
 
     @Nullable

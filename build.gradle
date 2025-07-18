@@ -17,7 +17,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version + "-forge+1.20.2+"
+version = mod_version + "-forge+1.20.2"
 group = mod_group_id
 
 base.archivesName = mod_id
@@ -117,15 +117,11 @@ repositories {
         name = 'Minecraft libraries'
         url = 'https://libraries.minecraft.net'
     }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
-            }
-        }
-        filter {
-            includeGroupAndSubgroups('org.spongepowered')
+    maven {
+        name = 'Sponge'
+        url = 'https://repo.spongepowered.org/repository/maven-public'
+        content {
+            includeGroupAndSubgroups 'org.spongepowered'
         }
     }
 }
@@ -143,12 +139,15 @@ dependencies {
     // Forge 1.21.6+ uses EventBus 7, which shifts most of its runtime validation to compile-time via an annotation processor
     // to improve performance in production environments. This line is required to enable said compile-time validation
     // in your development environment, helping you catch issues early.
-    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
+    //annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    minecraftLibrary 'com.moandjiezana.toml:toml4j:0.7.2'
+    minecraftLibrary('com.moandjiezana.toml:toml4j:0.7.2') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 
     jarJar(group: 'com.moandjiezana.toml', name: 'toml4j', version: '[0.7.2,)') {
+        exclude group: 'com.google.code.gson', module: 'gson'
         jarJar.pin(it, '0.7.2')
     }
 }
@@ -233,19 +232,19 @@ publishMods {
         projectId = "1303093"
         projectSlug = "multiyggdrasil"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        minecraftVersions.addAll(minecraft_versions.split(","))
+        minecraftVersions.add("1.20.2")
         displayName = version
     }
     modrinth {
         projectId = "LstvoJcB"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersions.addAll(minecraft_versions.split(","))
+        minecraftVersions.add("1.20.2")
         displayName = mod_version
     }
     github {
         repository = "QiuShui1012/MultiYggdrasil"
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = "forge-1.20.2+"
+        commitish = "forge-1.20.2"
         displayName = version
         tagName = version
     }
