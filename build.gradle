@@ -81,7 +81,7 @@ minecraft {
             // Recommended for development - enables more descriptive errors at the cost of slower startup and registration.
             property 'eventbus.api.strictRuntimeChecks', 'true'
 
-            arg "-mixin.config=${mod_id}.mixins.json"
+//            arg "-mixin.config=${mod_id}.mixins.json"
         }
 
         client {
@@ -142,9 +142,12 @@ dependencies {
     //annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    minecraftLibrary 'com.moandjiezana.toml:toml4j:0.7.2'
+    minecraftLibrary('com.moandjiezana.toml:toml4j:0.7.2') {
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
 
     jarJar(group: 'com.moandjiezana.toml', name: 'toml4j', version: '[0.7.2,)') {
+        exclude group: 'com.google.code.gson', module: 'gson'
         jarJar.pin(it, '0.7.2')
     }
 }
