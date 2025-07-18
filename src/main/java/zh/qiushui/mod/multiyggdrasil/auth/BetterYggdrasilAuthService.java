@@ -11,6 +11,7 @@ import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilGameProfileRepository;
+import com.mojang.authlib.yggdrasil.YggdrasilUserApiService;
 import com.mojang.datafixers.util.Pair;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -63,6 +64,6 @@ public class BetterYggdrasilAuthService extends YggdrasilAuthenticationService {
 
     @Override
     public UserApiService createUserApiService(final String accessToken) {
-        throw new UnsupportedOperationException("Should not use BetterYggdrasilAuthService$createUserApiService method.");
+        return new YggdrasilUserApiService(accessToken, getProxy(), servicesEnv);
     }
 }

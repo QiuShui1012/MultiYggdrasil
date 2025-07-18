@@ -89,19 +89,14 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
         AtomicReference<MinecraftClientException> e = new AtomicReference<>();
         for (URL joinUrl : joinUrls) {
-            if (singleJoinServer(request, joinUrl, e)) return;
+            try {
+                client.post(joinUrl, request, Void.class);
+                return;
+            } catch (final MinecraftClientException e1) {
+                e.set(e1);
+            }
         }
         throw e.get().toAuthenticationException();
-    }
-
-    private boolean singleJoinServer(JoinMinecraftServerRequest request, URL joinUrl, AtomicReference<MinecraftClientException> eR) {
-        try {
-            client.post(joinUrl, request, Void.class);
-        } catch (final MinecraftClientException e) {
-            eR.set(e);
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -118,17 +113,9 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
 
         for (URL url : checkUrls) {
             url = HttpAuthenticationService.concatenateURL(url, HttpAuthenticationService.buildQuery(arguments));
-            Optional<ProfileResult> resultOp = this.singleHasJoinedServer(profileName, url);
-            if (resultOp.isEmpty()) continue;
-            return resultOp.get();
-        }
-        return null;
-    }
-
-    private Optional<ProfileResult> singleHasJoinedServer(final String profileName, URL url) throws AuthenticationUnavailableException {
-        try {
-            final HasJoinedMinecraftServerResponse response = client.get(url, HasJoinedMinecraftServerResponse.class);
-            if (response != null && response.id() != null) {
+            try {
+                final HasJoinedMinecraftServerResponse response = client.get(url, HasJoinedMinecraftServerResponse.class);
+                if (response == null || response.id() == null) continue;
                 final GameProfile result = new GameProfile(response.id(), profileName);
 
                 if (response.properties() != null) {
@@ -138,16 +125,14 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
                 final Set<ProfileActionType> profileActions = response.profileActions().stream()
                     .map(ProfileAction::type)
                     .collect(Collectors.toSet());
-                return Optional.of(new ProfileResult(result, profileActions));
-            } else {
-                return Optional.empty();
+                return new ProfileResult(result, profileActions);
+            } catch (final MinecraftClientException e) {
+                if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
+                    throw unavailable;
+                }
             }
-        } catch (final MinecraftClientException e) {
-            if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
-                throw unavailable;
-            }
-            return Optional.empty();
         }
+        return null;
     }
 
     @Nullable
@@ -218,35 +203,29 @@ public class BetterYggdrasilMcSessionService implements MinecraftSessionService 
     @Nullable
     private ProfileResult fetchProfileUncached(final UUID profileId, final boolean requireSecure) {
         for (String baseUrl : baseUrls) {
-            Optional<ProfileResult> resultOp = singleFetchProfileUncached(baseUrl, profileId, requireSecure);
-            if (resultOp.isPresent()) return resultOp.get();
+            try {
+                URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UndashedUuid.toString(profileId));
+                url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
+
+                final MinecraftProfilePropertiesResponse response = client.get(url, MinecraftProfilePropertiesResponse.class);
+                if (response == null) {
+                    LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
+                    continue;
+                }
+
+                final GameProfile profile = response.toProfile();
+                final Set<ProfileActionType> profileActions = response.profileActions().stream()
+                    .map(ProfileAction::type)
+                    .collect(Collectors.toSet());
+
+                LOGGER.debug("Successfully fetched profile properties for {}", profile);
+                return new ProfileResult(profile, profileActions);
+            } catch (final MinecraftClientException | IllegalArgumentException e) {
+                LOGGER.warn("Couldn't look up profile properties for {} on url {}.", profileId, baseUrl, e);
+            }
         }
         LOGGER.warn("Couldn't look up profile properties for {}", profileId);
         return null;
-    }
-
-    private Optional<ProfileResult> singleFetchProfileUncached(final String baseUrl, final UUID profileId, final boolean requireSecure) {
-        try {
-            URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UndashedUuid.toString(profileId));
-            url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
-
-            final MinecraftProfilePropertiesResponse response = client.get(url, MinecraftProfilePropertiesResponse.class);
-            if (response == null) {
-                LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
-                return Optional.empty();
-            }
-
-            final GameProfile profile = response.toProfile();
-            final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                .map(ProfileAction::type)
-                .collect(Collectors.toSet());
-
-            LOGGER.debug("Successfully fetched profile properties for {}", profile);
-            return Optional.of(new ProfileResult(profile, profileActions));
-        } catch (final MinecraftClientException | IllegalArgumentException e) {
-            LOGGER.warn("Couldn't look up profile properties for {} on url {}.", profileId, baseUrl, e);
-            return Optional.empty();
-        }
     }
 }
 
