@@ -15,10 +15,10 @@ import zh.qiushui.mod.multiyggdrasil.yggdrasil.YggdrasilSourceType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("multi-yggdrasil.toml");
@@ -27,7 +27,7 @@ public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
         tryMkConfigDirs();
         TomlWriter writer = new TomlWriter();
         try {
-            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> result = new TreeMap<>();
             for (BaseYggdrasilSource source : config.sources) {
                 result.putAll(source.serialize());
             }
