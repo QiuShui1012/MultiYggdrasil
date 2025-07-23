@@ -21,6 +21,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
+    public static final YggdrasilServersConfig DEFAULT = new YggdrasilServersConfig(List.of(
+        new OfficialYggdrasilSource(
+            "MojangOfficial",
+            YggdrasilEnvironment.PROD.getEnvironment().getAuthHost(),
+            YggdrasilEnvironment.PROD.getEnvironment().getAccountsHost(),
+            YggdrasilEnvironment.PROD.getEnvironment().getSessionHost(),
+            0),
+        new BlessingSkinYggdrasilSource("LittleSkin", "https://littleskin.cn/api/yggdrasil/", 1)));
     private static final Path PATH = FMLPaths.CONFIGDIR.get().resolve("multi-yggdrasil.toml");
 
     public static void save(YggdrasilServersConfig config) {
@@ -47,12 +55,12 @@ public record YggdrasilServersConfig(List<BaseYggdrasilSource> sources) {
         Toml config;
         try {
             config = new Toml().read(PATH.toFile());
-        } catch (IllegalStateException e) {
+        } catch (Throwable e) {
             MultiYggdrasil.LOGGER.warn(
-                "Cannot load config. If you are first starting with this mod, you can ignore this warn, and finish your config in {}",
+                "Cannot load config. Use default config. If you are first starting with this mod, you can ignore this warn, and modify config in {} if you want.",
                 PATH, e
             );
-            return new YggdrasilServersConfig(List.of());
+            return DEFAULT;
         }
 
         List<BaseYggdrasilSource> sourceList = new ArrayList<>();

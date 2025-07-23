@@ -1,9 +1,9 @@
 ## What's new
-- **Supported Forge 1.20.2-**
-- **Supported GameProfileRepository again**
+- **Added default config**
+  It is: MojangOfficial and LittleSkin
 
 ****************************************
 
 ## 新更改
-- **支持了Forge 1.20.2-**
-- **重新支持了GameProfileRepository**
+- **添加了默认配置**
+  默认配置是：MojangOfficial 和 LittleSkin
