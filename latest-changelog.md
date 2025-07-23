@@ -1,7 +1,9 @@
 ## What's new
-- **Ported code optimization from forge-1.20.2-**
+- **Added default config**
+  It is: MojangOfficial and LittleSkin
 
 ****************************************
 
 ## 新更改
-- **从Forge 1.20.2-移植了代码优化**
+- **添加了默认配置**
+  默认配置是：MojangOfficial 和 LittleSkin
