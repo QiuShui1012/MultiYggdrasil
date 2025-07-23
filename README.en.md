@@ -3,8 +3,8 @@
 # MultiYggdrasil
 
 [![GitHub Release](https://img.shields.io/github/release/QiuShui1012/MultiYggdrasil.svg)](https://github.com/QiuShui1012/MultiYggdrasil/releases/)
-[![GitHub License](https://img.shields.io/github/license/QiuShui1012/MultiYggdrasil?style=flat-square)](https://github.com/QiuShui1012/MultiYggdrasil/blob/neoforge/LICENSE.txt)
-[![QQ Group](https://img.shields.io/badge/QQ%20group-108917413-yellow?style=flat-square)](https://qm.qq.com/q/XJGuYx9W6u)
+[![Github License](https://img.shields.io/github/license/QiuShui1012/MultiYggdrasil)](https://github.com/QiuShui1012/MultiYggdrasil/blob/neoforge/LICENSE.txt)
+[![QQ Group](https://img.shields.io/badge/QQ%20group-108917413-yellow)](https://qm.qq.com/q/XJGuYx9W6u)
 
 [简体中文](README.md) | **English**
 
