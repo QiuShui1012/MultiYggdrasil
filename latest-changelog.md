@@ -1,7 +1,9 @@
 ## What's new
-- **Special supported for 1.20.2**
+- **Added default config**
+  It is: MojangOfficial and LittleSkin
 
 ****************************************
 
 ## 新更改
-- **为1.20.2做了特殊支持**
+- **添加了默认配置**
+  默认配置是：MojangOfficial 和 LittleSkin
