@@ -13,7 +13,7 @@
 ## 概述
 
 MultiYggdrasil 是一个运行于 Forge | ~~Fabric~~ | NeoForge 的仅服务端模组，
-这意味着它在客户端使用局域网联机运行时某些功能可能无法正常运行，如[MC-52974](https://bugs.mojang.com/browse/MC/issues/MC-52974)。  
+这意味着它在客户端上完全没有作用。  
 它允许服务器设置多个Yggdrasil API来源，包括正版和其它外置登录。  
 配置设计参考了[MultiLogin](https://github.com/CaaMoe/MultiLogin)，
 部分代码来自[authlib-injector](https://github.com/yushijinhun/authlib-injector/)，遵循APGL-3.0版权。  
@@ -46,7 +46,7 @@ ordinal = 1
 
 [LittleSkin]
 type = "BLESSING_SKIN"                   # ↙ “BLESSING_SKIN”类型的特定值，URL结尾*应有*/，但是没有也可以
-apiRoot = "https://littleskin.cn/api/yggdrasil/"  
+apiRoot = "https://littleskin.cn/api/yggdrasil/"
 ordinal = 2
 ```
 
