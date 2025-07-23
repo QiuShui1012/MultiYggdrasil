@@ -13,7 +13,7 @@
 ## Summary
 
 MultiYggdrasil is a ~~Forge | Fabric |~~ NeoForge server-side only mod,
-this means some functions may have bugs when running LAN server on client, for example, [MC-52974](https://bugs.mojang.com/browse/MC/issues/MC-52974).  
+this means running on client will not provide any function.  
 It allows the server to set multiple Yggdrasil API sources, including the official and other external authentication servers.  
 Config design is inspired by [MultiLogin](https://github.com/CaaMoe/MultiLogin),
 Some codes are borrowed from [authlib-injector](https://github.com/yushijinhun/authlib-injector/) under the AGPL-3.0 license.  
