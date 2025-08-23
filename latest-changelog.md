@@ -1,7 +1,7 @@
 ## What's new
-- **Fixed broken mixin**
+- **Restricted forge version**
 
 ****************************************
 
 ## 新更改
-- **修复了损坏的mixin**
+- **限制了forge版本**
