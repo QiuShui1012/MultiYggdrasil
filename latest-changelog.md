@@ -1,7 +1,7 @@
 ## What's new
-- **Restricted forge version**
+- **Fixed a bug where java17 could not start**
 
 ****************************************
 
 ## 新更改
-- **限制了forge版本**
+- **修复了使用java17无法启动的问题**

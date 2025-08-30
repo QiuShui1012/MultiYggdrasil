@@ -23,7 +23,7 @@ group = mod_group_id
 base.archivesName = mod_id
 
 // Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
@@ -142,6 +142,13 @@ dependencies {
     //annotationProcessor 'net.minecraftforge:eventbus-validator:7.0-beta.10'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    minecraftLibrary(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
+    minecraftLibrary("io.github.llamalad7:mixinextras-forge:0.5.0")
+
+    jarJar(group: 'io.github.llamalad7', name: 'mixinextras-forge', version: '[0.5.0,)') {
+        jarJar.ranged(it, "[0.5.0,)")
+    }
+
     minecraftLibrary('com.moandjiezana.toml:toml4j:0.7.2') {
         exclude group: 'com.google.code.gson', module: 'gson'
     }
@@ -195,10 +202,18 @@ tasks.named('jar', Jar) {
     }
 }
 
+tasks.named('jarJar', Jar) {
+}
+
 tasks.register('sourcesJar', Jar) {
     from delombok.outputs.files
     dependsOn delombok
     archiveClassifier = "sources"
+}
+
+tasks.build.configure {
+    dependsOn tasks.jarJar
+    dependsOn sourcesJar
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -222,7 +237,7 @@ sourceSets.each {
 }
 
 publishMods {
-    file = jar.archiveFile
+    file = tasks.jarJar.archiveFile
     additionalFiles.from(sourcesJar.archiveFile)
     changelog = file("latest-changelog.md").text
     type = STABLE

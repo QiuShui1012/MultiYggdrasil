@@ -5,6 +5,7 @@
     "MainMixin"
   ],
   "compatibilityLevel": "JAVA_17",
+  "plugin": "zh.qiushui.mod.multiyggdrasil.mixin.MultiYggdrasilConfigPlugin",
   "injectors": {
     "defaultRequire": 1
   }
