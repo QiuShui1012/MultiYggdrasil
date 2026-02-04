@@ -14,15 +14,14 @@
 
 MultiYggdrasil 是一个运行于 Forge | Fabric | NeoForge 的模组。  
 它允许您设置多个Yggdrasil API来源，包括正版和其它外置登录。  
-配置设计参考了[MultiLogin](https://github.com/CaaMoe/MultiLogin)，
-部分代码来自[authlib-injector](https://github.com/yushijinhun/authlib-injector/)，遵循APGL-3.0版权。  
+配置设计参考了[MultiLogin](https://github.com/CaaMoe/MultiLogin)，部分代码来自[authlib-injector](https://github.com/yushijinhun/authlib-injector/)，遵循APGL-3.0版权。  
 ~~缝合怪~~
 
 ## 安装
 
 与其它大部分模组一致，仅需三步：
 1. 从 [CurseForge](https://curseforge.com/minecraft/mc-mods/multiyggdrasil) | [Modrinth](https://modrinth.com/mod/multiyggdrasil/) 下载模组
-2. 放入 mods 文件夹
+2. 放入 `/mods` 文件夹
 3. 启动游戏
 
 ## 配置
@@ -39,7 +38,7 @@ servicesHost = "https://a.random.mirror" # “OFFICIAL”类型的特定值，�
 profilesHost = "https://a.random.mirror" # “OFFICIAL”类型的特定值，需求见下表
 ordinal = 0                              # *序号，决定了该来源的使用顺序
 
-[MojangOfficialAPI]
+[MojangOfficial]
 type = "OFFICIAL"                        # “OFFICIAL”类型可以没有Host属性值，此时会使用官方API
 ordinal = 1
 
@@ -64,8 +63,7 @@ ordinal = 2
 |   Minecraft    | Forge | Fabric | NeoForge |
 |:--------------:|:-----:|:------:|:--------:|
 |    1.14.4-     |   ❌   |   ❌    |    ❌     |
-| 1.14.4~1.16.3  |   ❌   |   ✅    |    ❌     |
-| 1.16.5~1.20.1  |   ✅   |   ✅    |    ❌     |
+| 1.14.4~1.20.1  |   ✅   |   ✅    |    ❌     |
 | 1.20.1~1.20.6  |   ✅   |   ✅    |    ✅     |
 | 1.21.1~1.21.11 |   ❌   |   ✅    |    ✅     |
 
