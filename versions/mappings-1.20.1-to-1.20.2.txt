@@ -1,0 +1,1 @@
+com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload getTextures() textures()

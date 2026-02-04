@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "name": "${mod_name}",
+  "version": "${mod_version}",
+  "description": "${mod_description}",
+  "authors": [
+    {
+      "name": "QiuShui1012",
+      "contact": {
+        "homepage": "https://github.com/QiuShui1012/"
+      }
+    }
+  ],
+  "license": "${mod_license}",
+  "contact": {
+    "homepage": "${mod_homepage}",
+    "issues": "${mod_sources}/issues",
+    "sources": "${mod_sources}"
+  },
+  "environment": "*",
+  "accessWidener" : "multiyggdrasil.classTweaker",
+  "entrypoints": {
+    "main": [
+      "zh.qiushui.mod.multiyggdrasil.MultiYggdrasilPlatform"
+    ]
+  },
+  "mixins": [
+    "multiyggdrasil.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_dependency}"
+  }
+}

@@ -1,25 +1,16 @@
 package zh.qiushui.mod.multiyggdrasil;
 
-import com.mojang.logging.LogUtils;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import org.slf4j.Logger;
-import zh.qiushui.mod.multiyggdrasil.config.YggdrasilServersConfig;
+//#if MC < 11800
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+//#else
+//$$ import com.mojang.logging.LogUtils;
+//$$ import org.slf4j.Logger;
+//#endif
+import zh.qiushui.mod.multiyggdrasil.config.YggdrasilConfig;
 
-@Mod(MultiYggdrasil.MOD_ID)
 public class MultiYggdrasil {
     public static final String MOD_ID = "multiyggdrasil";
-    public static final Logger LOGGER = LogUtils.getLogger();
-    public static final YggdrasilServersConfig SERVERS_CONFIG = YggdrasilServersConfig.load();
-
-    public MultiYggdrasil(IEventBus ignored, ModContainer ignored1) {
-        NeoForge.EVENT_BUS.addListener(MultiYggdrasil::onServerSave);
-    }
-
-    private static void onServerSave(LevelEvent.Save event) {
-        YggdrasilServersConfig.save(SERVERS_CONFIG);
-    }
+    public static final Logger LOGGER = LogManager.getLogger();
+    public static final YggdrasilConfig SERVERS_CONFIG = YggdrasilConfig.load();
 }

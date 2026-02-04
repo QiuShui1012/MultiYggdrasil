@@ -1,179 +1,259 @@
 plugins {
-    id 'java-library'
-    id 'net.neoforged.moddev' version '2.0.96'
-    id 'idea'
-    id 'io.freefair.lombok' version '8.7.1'
-    id 'me.modmuss50.mod-publish-plugin' version '0.8.4'
+    id("gg.essential.loom").version("${essential_loom_version}").apply(false)
+    id("com.replaymod.preprocess").version("${preprocessor_version}")
+    id("org.ajoberstar.grgit").version("${grgit_version}")
+    id("io.freefair.lombok").version("${lombok_version}")
 }
 
-tasks.named('wrapper', Wrapper).configure {
-    // Define wrapper values here so as to not have to always do so when updating gradlew.properties.
-    // Switching this to Wrapper.DistributionType.ALL will download the full gradle sources that comes with
-    // documentation attached on cursor hover of gradle classes and methods. However, this comes with increased
-    // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
-    // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
-    distributionType = Wrapper.DistributionType.BIN
+preprocess {
+    strictExtraMappings = false
+
+    var mc11404_fabric = createNode("1.14.4-fabric", 1_14_04, 'mojang')
+    var mc11502_fabric = createNode("1.15.2-fabric", 1_15_02, 'mojang')
+    var mc11603_fabric = createNode("1.16.3-fabric", 1_16_03, 'mojang')
+    var mc11701_fabric = createNode("1.17.1-fabric", 1_17_01, 'mojang')
+    var mc11802_fabric = createNode("1.18.2-fabric", 1_18_02, 'mojang')
+    var mc11902_fabric = createNode("1.19.2-fabric", 1_19_02, 'mojang')
+    var mc11904_fabric = createNode("1.19.4-fabric", 1_19_04, 'mojang')
+    var mc12001_fabric = createNode("1.20.1-fabric", 1_20_01, 'mojang')
+    var mc12002_fabric = createNode("1.20.2-fabric", 1_20_02, 'mojang')
+    var mc12004_fabric = createNode("1.20.4-fabric", 1_20_04, 'mojang')
+    var mc12006_fabric = createNode("1.20.6-fabric", 1_20_06, 'mojang')
+    var mc12101_fabric = createNode("1.21.1-fabric", 1_21_01, 'mojang')
+    var mc12103_fabric = createNode("1.21.3-fabric", 1_21_03, 'mojang')
+    var mc12105_fabric = createNode("1.21.5-fabric", 1_21_05, 'mojang')
+    var mc12108_fabric = createNode("1.21.8-fabric", 1_21_08, 'mojang')
+    var mc12110_fabric = createNode("1.21.10-fabric", 1_21_10, 'mojang')
+    var mc12111_fabric = createNode("1.21.11-fabric", 1_21_11, 'mojang')
+
+    mc11502_fabric.link(mc11404_fabric, null)
+    mc11603_fabric.link(mc11502_fabric, file("versions/mappings-1.16.3-to-1.15.txt"))
+
+    mc11603_fabric.link(mc11701_fabric, null)
+    mc11701_fabric.link(mc11802_fabric, null)
+    mc11802_fabric.link(mc11902_fabric, null)
+    mc11902_fabric.link(mc11904_fabric, null)
+    mc11904_fabric.link(mc12001_fabric, null)
+    mc12001_fabric.link(mc12002_fabric, file("versions/mappings-1.20.1-to-1.20.2.txt"))
+    mc12002_fabric.link(mc12004_fabric, null)
+    mc12004_fabric.link(mc12006_fabric, null)
+    mc12006_fabric.link(mc12101_fabric, null)
+    mc12101_fabric.link(mc12103_fabric, null)
+    mc12103_fabric.link(mc12105_fabric, null)
+    mc12105_fabric.link(mc12108_fabric, null)
+    mc12108_fabric.link(mc12110_fabric, null)
+    mc12110_fabric.link(mc12111_fabric, null)
+
+    var mc11404_forge = createNode("1.14.4-forge", 1_14_04, 'mojang')
+    var mc11502_forge = createNode("1.15.2-forge", 1_15_02, 'mojang')
+    var mc11603_forge = createNode("1.16.3-forge", 1_16_03, 'mojang')
+    var mc11701_forge = createNode("1.17.1-forge", 1_17_01, 'mojang')
+    var mc11802_forge = createNode("1.18.2-forge", 1_18_02, 'mojang')
+    var mc11902_forge = createNode("1.19.2-forge", 1_19_02, 'mojang')
+    var mc11904_forge = createNode("1.19.4-forge", 1_19_04, 'mojang')
+    var mc12001_forge = createNode("1.20.1-forge", 1_20_01, 'mojang')
+    var mc12002_forge = createNode("1.20.2-forge", 1_20_02, 'mojang')
+    var mc12004_forge = createNode("1.20.4-forge", 1_20_04, 'mojang')
+    var mc12006_forge = createNode("1.20.6-forge", 1_20_06, 'mojang')
+
+    mc11603_fabric.link(mc11603_forge, null)
+
+    mc11502_forge.link(mc11404_forge, null)
+    mc11603_forge.link(mc11502_forge, file("versions/mappings-1.16.3-to-1.15.txt"))
+
+    mc11603_forge.link(mc11701_forge, null)
+    mc11701_forge.link(mc11802_forge, null)
+    mc11802_forge.link(mc11902_forge, null)
+    mc11902_forge.link(mc11904_forge, null)
+    mc11904_forge.link(mc12001_forge, null)
+    mc12001_forge.link(mc12002_forge, file("versions/mappings-1.20.1-to-1.20.2.txt"))
+    mc12002_forge.link(mc12004_forge, null)
+    mc12004_forge.link(mc12006_forge, null)
+
+    var mc12002_neoforge = createNode("1.20.2-neoforge", 1_20_02, 'mojang')
+    var mc12004_neoforge = createNode("1.20.4-neoforge", 1_20_04, 'mojang')
+    var mc12006_neoforge = createNode("1.20.6-neoforge", 1_20_06, 'mojang')
+    var mc12101_neoforge = createNode("1.21.1-neoforge", 1_21_01, 'mojang')
+    var mc12103_neoforge = createNode("1.21.3-neoforge", 1_21_03, 'mojang')
+    var mc12105_neoforge = createNode("1.21.5-neoforge", 1_21_05, 'mojang')
+    var mc12108_neoforge = createNode("1.21.8-neoforge", 1_21_08, 'mojang')
+    var mc12110_neoforge = createNode("1.21.10-neoforge", 1_21_10, 'mojang')
+    var mc12111_neoforge = createNode("1.21.11-neoforge", 1_21_11, 'mojang')
+
+    mc12002_forge.link(mc12002_neoforge, null)
+
+    mc12002_neoforge.link(mc12004_neoforge, null)
+    mc12004_neoforge.link(mc12006_neoforge, null)
+    mc12006_neoforge.link(mc12101_neoforge, null)
+    mc12101_neoforge.link(mc12103_neoforge, null)
+    mc12103_neoforge.link(mc12105_neoforge, null)
+    mc12105_neoforge.link(mc12108_neoforge, null)
+    mc12108_neoforge.link(mc12110_neoforge, null)
+    mc12110_neoforge.link(mc12111_neoforge, null)
+
+    for (final def node in getNodes()) {
+        findProject(node.project).ext.mcVersion = node.mcVersion
+        var modPlatform = "none"
+        if (node.project.endsWith("-fabric")) {
+            modPlatform = "fabric"
+        } else if (node.project.endsWith("-forge")) {
+            modPlatform = "forge"
+        } else if (node.project.endsWith("-neoforge")) {
+            modPlatform = "neoforge"
+        } else if (node.project.endsWith("-quilt")) {
+            modPlatform = "quilt"
+        }
+        findProject(node.project).ext.modPlatform = modPlatform
+    }
 }
 
-version = mod_version + "-neoforge+1.20.2+"
-group = mod_group_id
+ext {
+    Map env = System.getenv()
+    File localPropsFile = file("${rootDir}/local.properties")
 
-repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-}
-
-base.archivesName = mod_id
-
-// Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-neoForge {
-    // Specify the version of NeoForge to use.
-    version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
+    if (localPropsFile.exists()) {
+        Properties p = new Properties()
+        p.load(new FileInputStream(localPropsFile))
+        p.each { key, value ->
+            ext[key as String] = value
+        }
     }
 
-    // This line is optional. Access Transformers are automatically detected
-    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+    getEnv = {
+        return env
+    }
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            client()
+    getOrDefault = { String key, String defaultValue ->
+        String value
+        (value = project.findProperty(key)) && !value.isEmpty() ? value : defaultValue
+    }
 
-            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+    isGithubCI = {
+        return env.get("GITHUB_ACTION") != null
+    }
+
+    isJitpack = {
+        return env.get("JITPACK") != null
+    }
+
+    getBuildNumber = {
+        return env.GITHUB_RUN_NUMBER ? env.GITHUB_RUN_NUMBER : 0
+    }
+
+    getVersionGit = { List paths ->
+        if (grgit == null || grgit.head() == null) {
+            return "nogit"
         }
 
-        server {
-            server()
-            programArguments.addAll '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        List latestCommits = paths.isEmpty() ? grgit.log(maxCommits: 1) : grgit.log(paths: paths, maxCommits: 1)
+        return latestCommits.isEmpty() ? "uncommited" : "${latestCommits.get(0).id.substring(0, 7)}"
+    }
+
+    getVersionType = {
+        String type = getOrDefault("ow.build.environment.buildType", null)
+
+        if (type != null) {
+            return type
         }
 
-        // This run config launches GameTestServer and runs all registered gametests, then exits.
-        // By default, the server will crash when no gametests are provided.
-        // The gametest system is also enabled by default for other run configs under the /test command.
-        gameTestServer {
-            type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        if (isJitpack()) {
+            return "jitpack"
         }
 
-        // applies to all the run configs above
-        configureEach {
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
+        type = env.BUILD_TYPE
 
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            logLevel = org.slf4j.event.Level.DEBUG
+        switch (type) {
+            case "RELEASE":
+                return "stable"
+            case "BETA":
+                return "beta"
+            case "PULL_REQUEST":
+                return "pull_request"
+            default:
+                return "dev"
         }
     }
 
-    mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // multi mod projects should define one per mod
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
+    getVersionPatch = { List paths ->
+        if (grgit == null || grgit.head() == null) {
+            return 0
+        }
+
+        List latestCommits = paths.isEmpty() ? grgit.log() : grgit.log(paths: paths)
+        return latestCommits.size()
+    }
+
+    getVersion = { Project proj ->
+        return "${proj.property("mod.version")}.${getVersionPatch(proj == rootProject ? [] : [proj.projectDir.name])}"
+    }
+
+    getVersionWithCommitHash = { Project proj ->
+        return "${getVersion(proj)}+${getVersionGit(proj == rootProject ? [] : [proj.projectDir.name])}-${getVersionType()}"
+    }
+
+    getModVersion = { Project proj ->
+        return "${getVersion(proj)}-${getVersionType()}"
+    }
+
+    getMavenArtifactVersion = { Project proj ->
+        return project.getVersionType() == "stable" ? "${getVersion(proj)}" : "${getModVersion(proj)}"
+    }
+}
+
+tasks.register("genLocalProperties") {
+    it.group("${project.property("mod.id")}")
+
+    doFirst {
+        File localPropsFile = file("${rootDir}/local.properties")
+
+        if (localPropsFile.exists()) {
+            throw new IllegalStateException("local.properties file already generated. If you want to regenerate it, please delete it manually first")
+        } else {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(localPropsFile))
+            bufferedWriter.writeLine("# Secrets")
+            bufferedWriter.writeLine("secrets.gpg.signingKey=")
+            bufferedWriter.writeLine("secrets.gpg.signingPassword=")
+            bufferedWriter.writeLine("secrets.mavenCentral.username=")
+            bufferedWriter.writeLine("secrets.mavenCentral.password=")
+            bufferedWriter.writeLine('')
+            bufferedWriter.writeLine("# Overwritten configurations")
+            bufferedWriter.writeLine("ow.build.environment.local=")
+            bufferedWriter.writeLine("ow.build.environment.buildType=")
+            bufferedWriter.writeLine("ow.game.window.width=")
+            bufferedWriter.writeLine("ow.game.window.height=")
+            bufferedWriter.writeLine("ow.game.window.username=")
+            bufferedWriter.close()
+
+            project.getLogger().info("local.properties generated successfully!")
         }
     }
 }
 
-// Include resources generated by data generators.
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+tasks.register("cleanPreprocessSources") {
+    it.group("${project.mod_id}")
 
-dependencies {
-    jarJar(api('com.moandjiezana.toml:toml4j:0.7.2')) {
-        exclude group: "com.google.code.gson", module: "gson"
-    }
-    additionalRuntimeClasspath 'com.moandjiezana.toml:toml4j:0.7.2'
-}
-
-// This block of code expands all declared replace properties in the specified resource targets.
-// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
-tasks.withType(ProcessResources).configureEach {
-    var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_authors            : mod_authors,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_description        : mod_description
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/neoforge.mods.toml']) {
-        expand replaceProperties
+    doFirst {
+        subprojects {
+            def path = project.projectDir.toPath().resolve("build/preprocessed")
+            path.toFile().deleteDir()
+        }
     }
 }
 
-tasks.register('sourcesJar', Jar) {
-    from delombok.outputs.files
-    dependsOn delombok
-    archiveClassifier = "sources"
-}
-
-tasks.named('build') {
-    dependsOn sourcesJar
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-lombok {
-    version = "1.18.34"
-}
-
-// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
+tasks.register("copyAllJars", Copy) {
+    subprojects.forEach { subproject ->
+        dependsOn subproject.tasks.named("build")
+        var modVersion = getModVersion(subproject)
+        from(subproject.layout.buildDirectory.dir("libs")) {
+            include "*-${modVersion}.jar"
+        }
+        from(subproject.layout.buildDirectory.dir("devlibs")) {
+            include "*-${modVersion}.jar"
+        }
     }
-}
-
-publishMods {
-    file = jar.archiveFile
-    additionalFiles.from(sourcesJar.archiveFile)
-    changelog = file("latest-changelog.md").text
-    type = STABLE
-    modLoaders.add("neoforge")
-
-    curseforge {
-        projectId = "1303093"
-        projectSlug = "multiyggdrasil"
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        minecraftVersions.addAll(minecraft_versions.split(","))
-        displayName = rootProject.version
+    doFirst {
+        delete layout.buildDirectory.dir("libs")
     }
-    modrinth {
-        projectId = "LstvoJcB"
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersions.addAll(minecraft_versions.split(","))
-        displayName = rootProject.version
-    }
-    github {
-        repository = "QiuShui1012/MultiYggdrasil"
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        commitish = "neoforge-1.20.2+"
-        displayName = project.version
-        tagName = project.version
-    }
+    into(layout.buildDirectory.dir("libs"))
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
 }

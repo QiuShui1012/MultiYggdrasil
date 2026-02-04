@@ -1,5 +1,5 @@
 /*
- * This file uses a lot of codes from authlib-injector project
+ * This file uses some codes from authlib-injector project
  * (https://github.com/yushijinhun/authlib-injector/) and has some
  * custom modifications.
  * Below is the License Header from original files.

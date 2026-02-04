@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "zh.qiushui.mod.multiyggdrasil.mixin",
+  "mixins": [
+    "PhysicalServerStartMixin"
+  ],
+  "compatibilityLevel": "JAVA_8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "PhysicalClientStartMixin"
+  ]
+}

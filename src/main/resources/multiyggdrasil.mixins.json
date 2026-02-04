@@ -2,10 +2,14 @@
   "required": true,
   "package": "zh.qiushui.mod.multiyggdrasil.mixin",
   "mixins": [
-    "MainMixin"
+    "LogicalServerSaveMixin",
+    "PhysicalServerStartMixin"
   ],
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_${java_version}",
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "PhysicalClientStartMixin"
+  ]
 }
