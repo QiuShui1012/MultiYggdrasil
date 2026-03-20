@@ -48,7 +48,7 @@ jobs:
         id: versions
         run: |
           JSON=$(cat ./settings.json)
-          echo "::set-output name=versions::${JSON//'%'/'%25'}"
+          echo "versions=$JSON" >> $GITHUB_OUTPUT
 
   build:
     permissions: write-all
