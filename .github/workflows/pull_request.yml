@@ -57,8 +57,9 @@ jobs:
       - name: Setup Versions
         id: versions
         run: |
-          JSON=$(cat ./settings.json)
-          echo "versions=$JSON" >> $GITHUB_OUTPUT
+          echo 'versions=<<EOF' >> $GITHUB_OUTPUT
+          cat ./settings.json >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
   build:
     permissions: write-all
