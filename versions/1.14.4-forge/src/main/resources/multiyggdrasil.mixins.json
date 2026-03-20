@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "zh.qiushui.mod.multiyggdrasil.mixin",
+  "package": "com.qiushui1012.mod.multiyggdrasil.mixin",
   "mixins": [
     "PhysicalServerStartMixin"
   ],

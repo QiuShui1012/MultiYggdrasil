@@ -27,7 +27,7 @@ preprocess {
     vars.put("FABRIC_LIKE", fabricLike ? 1 : 0)
     vars.put("FORGE_LIKE", forgeLike ? 1 : 0)
 
-    patternAnnotation.set("zh.qiushui.mod.multiyggdrasil.util.vap.VAPPattern")
+    patternAnnotation.set("com.qiushui1012.mod.multiyggdrasil.util.vap.VAPPattern")
 }
 
 loom {
@@ -163,9 +163,9 @@ loom {
 }
 
 base {
-    setArchivesName("${project.parent.property("mod.archives_base_name")}-mc${project.property("dependencies.minecraft_version")}-${modPlatform}")
+    setArchivesName("${project.parent.property("mod.archives_base_name")}-${project.property("dependencies.minecraft_version")}-${modPlatform}")
     setGroup("${project.property("mod.maven_group")}")
-    setVersion(project.getModVersion(project.parent))
+    setVersion(project.getVersion(project.parent))
 }
 
 java {
@@ -198,7 +198,7 @@ processResources {
     inputs.property("mod_license", project.parent.property("mod.license"))
     inputs.property("mod_name", project.parent.property("mod.name"))
     inputs.property("mod_sources", project.parent.property("mod.sources"))
-    inputs.property("mod_version", project.getVersionWithCommitHash(this.project.parent))
+    inputs.property("mod_version", project.getVersion(this.project.parent))
     inputs.property("java_version", java.sourceCompatibility.getMajorVersion())
 
     [
@@ -272,7 +272,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = project.group
             artifactId = "${this.project.parent.property("mod.artifact_name")}-${project.name}"
-            version = "${this.project.getMavenArtifactVersion(this.project.parent)}"
+            version = "${this.project.getVersion(this.project.parent)}"
 
             from(this.project.components.java)
         }

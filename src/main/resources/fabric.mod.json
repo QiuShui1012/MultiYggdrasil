@@ -22,7 +22,7 @@
   "accessWidener" : "multiyggdrasil.classTweaker",
   "entrypoints": {
     "main": [
-      "zh.qiushui.mod.multiyggdrasil.MultiYggdrasilPlatform"
+      "com.qiushui1012.mod.multiyggdrasil.MultiYggdrasilPlatform"
     ]
   },
   "mixins": [
