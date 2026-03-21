@@ -42,9 +42,8 @@ jobs:
       - name: Setup Versions
         id: versions
         run: |
-          echo 'versions=<<EOF' >> $GITHUB_OUTPUT
-          cat ./settings.json | tr '\r\n' ' ' >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          VERSIONS=$(cat ./settings.json | tr '\r\n' '' | tr ' ' '')
+          echo 'versions=$VERSIONS' >> $GITHUB_OUTPUT
 
   build:
     name: Build Version ${{ matrix.version }}
