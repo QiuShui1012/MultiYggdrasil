@@ -43,7 +43,7 @@ jobs:
       VERSION_TYPE: ${{ inputs.version_type }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Read Properties
         id: 'properties'
@@ -53,7 +53,7 @@ jobs:
           properties: 'java_version dependencies.minecraft_version'
 
       - name: Setup Java ${{ steps.properties.outputs.java_version }}
-        uses: actions/setup-java@v3.6.0
+        uses: actions/setup-java@v5.2.0
         with:
           distribution: zulu
           java-version: ${{ steps.properties.outputs.java_version }}
@@ -63,7 +63,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build
         run: ./gradlew :${{ inputs.version }}:build
@@ -75,14 +75,14 @@ jobs:
           echo "version=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Capture Build Artifacts
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v7
         with:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} ${{ steps.version.outputs.version }}"
           path: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Game Test
         if: ${{ inputs.gametest }}
-        uses: Anvil-Dev/dedicated-server-launch-test@1.21.11-neoforge
+        uses: QiuShui1012/dedicated-server-launch-test@${{ inputs.version }}
         with:
           mod: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
