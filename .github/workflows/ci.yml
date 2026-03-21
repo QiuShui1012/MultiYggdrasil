@@ -19,32 +19,8 @@ on:
 
 jobs:
   setup:
-    name: Setup Versions
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    outputs:
-      versions: ${{ steps.versions.outputs.versions }}
-      mod_id: ${{ steps.properties.outputs.mod.id }}
-      mod_name: ${{ steps.properties.outputs.mod.name }}
-    env:
-      BUILD_TYPE: snapshot
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Read Properties
-        id: properties
-        uses: christian-draeger/read-properties@1.1.1
-        with:
-          path: gradle.properties
-          properties: 'mod.id mod.name'
-
-      - name: Setup Versions
-        id: versions
-        run: |
-          VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
-          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
+    name: Setup Environment
+    uses: ./.github/workflows/setup.yml
 
   build:
     name: Build Version ${{ matrix.version }}
@@ -52,13 +28,13 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        version: ${{ fromJson(needs.setup.outputs.versions).versions }}
+        version: ${{ needs.setup.outputs.versions }}
     uses: ./.github/workflows/build_and_test.yml
     with:
       version: ${{ matrix.version }}
       version_type: snapshot
       ci_build: true
       pr_build: false
-      mod_id: ${{ needs.setup.outputs.mod_id }}
-      mod_name: ${{ needs.setup.outputs.mod_name }}
+      mod_id: '${{ needs.setup.outputs.mod_id }}'
+      mod_name: '${{ needs.setup.outputs.mod_name }}'
       gametest: true

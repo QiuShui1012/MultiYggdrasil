@@ -50,51 +50,35 @@ jobs:
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: versions/${{ inputs.version }}/gradle.properties
-          properties: 'java_version action.minecraft_version action.mod_loader action.loader_version'
-
-      - name: Setup Java ${{ steps.properties.outputs.java_version }}
-        uses: actions/setup-java@v5.2.0
-        with:
-          distribution: zulu
-          java-version: ${{ steps.properties.outputs.java_version }}
-
-      - name: Make Gradle Wrapper Executable
-        if: ${{ runner.os != 'Windows' }}
-        run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Build
-        run: ./gradlew :${{ inputs.version }}:build
+          properties: 'action.minecraft_version action.mod_loader action.loader_version'
 
       - name: Get Version
         id: version
         run: |
-          MESSAGE=$(ls ${{ inputs.version }}/build/libs/* | grep sources.jar -v | awk -F '${{ inputs.mod_id }}-${{ inputs.version }}-|.jar' '{print $2}')
+          MESSAGE=$(ls versions/${{ inputs.version }}/build/libs/* | grep sources.jar -v | awk -F '${{ inputs.mod_id }}-${{ inputs.version }}-|.jar' '{print $2}')
           echo "version=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Capture Build Artifacts
         uses: actions/upload-artifact@v7
         with:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} ${{ steps.version.outputs.version }}"
-          path: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+          path: versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Game Test
         if: ${{ inputs.gametest }}
         uses: Anvil-Dev/dedicated-server-launch-test@universal
         with:
-          minecraft_version: ${{ steps.properties.outputs.action.minecraft_version }}
-          mod_loader: ${{ steps.properties.outputs.action.mod_loader }}
-          loader_version: ${{ steps.properties.outputs.action.loader_version }}
-          mods: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+          minecraft_version: '${{ steps.properties.outputs.action.minecraft_version }}'
+          mod_loader: '${{ steps.properties.outputs.action.mod_loader }}'
+          loader_version: '${{ steps.properties.outputs.action.loader_version }}'
+          mods: versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Upload Release Jar
         if: ${{ !inputs.ci_build && !inputs.pr_build }}
         uses: softprops/action-gh-release@v0.1.15
         with:
           files: |
-            ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+            versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Publish Mod
         uses: Kir-Antipov/mc-publish@v3.3
@@ -114,5 +98,5 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |
-            build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
-            build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}-sources.jar
+            versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+            versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}-sources.jar
