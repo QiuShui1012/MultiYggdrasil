@@ -42,6 +42,22 @@ jobs:
       PR_BUILD: ${{ inputs.pr_build }}
       VERSION_TYPE: ${{ inputs.version_type }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        uses: gradle/actions/setup-gradle@v5
+
       - name: Build Subproject
         run: ./gradlew :${{ inputs.version }}:build
 
