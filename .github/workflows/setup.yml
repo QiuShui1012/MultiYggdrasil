@@ -15,8 +15,8 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
-      mod_id: ${{ steps.properties.outputs.mod.id }}
-      mod_name: ${{ steps.properties.outputs.mod.name }}
+      mod_id: ${{ steps.properties.outputs.mod-id }}
+      mod_name: ${{ steps.properties.outputs.mod-name }}
       versions: ${{ steps.versions.outputs.versions }}
     steps:
       - name: Checkout
