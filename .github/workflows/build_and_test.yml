@@ -42,13 +42,8 @@ jobs:
       PR_BUILD: ${{ inputs.pr_build }}
       VERSION_TYPE: ${{ inputs.version_type }}
     steps:
-      - name: Debug - Check Versions Folders
-        run: |
-          VERSIONS=$(ls -R ./versions/${{ inputs.version }}/build/libs/*)
-          echo "$VERSIONS"
-
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Build Subproject
+        run: ./gradlew :${{ inputs.version }}:build
 
       - name: Debug - Check Versions Folders
         run: |

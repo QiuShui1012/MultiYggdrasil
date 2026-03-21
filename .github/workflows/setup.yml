@@ -47,6 +47,3 @@ jobs:
 
       - name: Build with Gradle
         uses: gradle/actions/setup-gradle@v5
-
-      - name: Build
-        run: ./gradlew build
