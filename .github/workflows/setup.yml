@@ -2,9 +2,12 @@ name: Setup Environment
 on:
   workflow_call:
     outputs:
-      versions: ${{ fromJson(jobs.setup.outputs.versions).versions }}
-      mod_id: ${{ jobs.setup.outputs.mod.id }}
-      mod_name: ${{ jobs.setup.outputs.mod.name }}
+      mod_id:
+        value: ${{ jobs.setup.outputs.mod.id }}
+      mod_name:
+        value: ${{ jobs.setup.outputs.mod.name }}
+      versions:
+        value: ${{ jobs.setup.outputs.versions }}
 
 jobs:
   setup:
@@ -13,9 +16,9 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     outputs:
-      versions: ${{ steps.versions.outputs.versions }}
       mod_id: ${{ steps.properties.outputs.mod.id }}
       mod_name: ${{ steps.properties.outputs.mod.name }}
+      versions: ${{ fromJson(steps.versions.outputs.versions).versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
