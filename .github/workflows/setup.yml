@@ -11,7 +11,6 @@ on:
 
 jobs:
   setup:
-    name: Setup Versions
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -44,7 +43,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build
-        run: ./gradlew :${{ inputs.version }}:build
+        run: ./gradlew :build
 
       - name: Setup Versions
         id: versions
