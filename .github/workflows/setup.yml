@@ -3,9 +3,9 @@ on:
   workflow_call:
     outputs:
       mod_id:
-        value: ${{ jobs.setup.outputs.mod.id }}
+        value: ${{ jobs.setup.outputs.mod_id }}
       mod_name:
-        value: ${{ jobs.setup.outputs.mod.name }}
+        value: ${{ jobs.setup.outputs.mod_name }}
       versions:
         value: ${{ jobs.setup.outputs.versions }}
 
