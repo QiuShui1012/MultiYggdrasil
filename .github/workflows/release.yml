@@ -31,7 +31,7 @@ jobs:
       - name: Setup Versions
         id: versions
         run: |
-          VERSIONS=$(cat ./settings.json | tr '\r\n' '' | tr ' ' '')
+          VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
           echo 'versions=$VERSIONS' >> $GITHUB_OUTPUT
 
   build:
