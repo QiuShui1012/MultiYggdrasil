@@ -29,6 +29,12 @@ jobs:
           path: gradle.properties
           properties: 'mod.id mod.name'
 
+      - name: Setup Versions
+        id: versions
+        run: |
+          VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
+          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
+
       - name: Setup Java 21
         uses: actions/setup-java@v5.2.0
         with:
@@ -45,15 +51,7 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Setup Versions
-        id: versions
-        run: |
-          VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
-          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
-
       - name: Debug - Check Versions Folders
         run: |
-          ROOT=$(ls ./*)
+          ROOT=$(ls -R ./*)
           echo "$ROOT"
-          VERSIONS=$(ls versions/*)
-          echo "$VERSIONS"
