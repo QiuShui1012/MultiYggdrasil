@@ -68,9 +68,9 @@ jobs:
         if: ${{ inputs.gametest }}
         uses: Anvil-Dev/dedicated-server-launch-test@universal
         with:
-          minecraft_version: '${{ steps.properties.outputs.action.minecraft_version }}'
-          mod_loader: '${{ steps.properties.outputs.action.mod_loader }}'
-          loader_version: '${{ steps.properties.outputs.action.loader_version }}'
+          minecraft_version: '${{ steps.properties.outputs.action-minecraft_version }}'
+          mod_loader: '${{ steps.properties.outputs.action-mod_loader }}'
+          loader_version: '${{ steps.properties.outputs.action-loader_version }}'
           mods: versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Upload Release Jar
@@ -86,7 +86,7 @@ jobs:
         with:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} v${{ steps.version.outputs.version }}"
           version: ${{ steps.version.outputs.version }}
-          game-versions: ${{ steps.properties.outputs.dependencies.minecraft_version }}
+          game-versions: ${{ steps.properties.outputs.action-minecraft_version }}
           version-type: ${{ env.VERSION_TYPE }}
           fail-mode: skip
 
