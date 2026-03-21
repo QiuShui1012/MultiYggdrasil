@@ -7,6 +7,7 @@ on:
       - dev/**
     paths:
       - .github/workflows/ci.yml
+      - .github/workflows/setup.yml
       - .github/workflows/build_and_test.yml
       - src/**
       - versions/**
