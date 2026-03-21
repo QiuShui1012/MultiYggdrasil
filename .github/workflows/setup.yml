@@ -43,7 +43,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build
-        run: ./gradlew :build
+        run: ./gradlew build
 
       - name: Setup Versions
         id: versions
