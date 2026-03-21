@@ -17,7 +17,7 @@ jobs:
     outputs:
       mod_id: ${{ steps.properties.outputs.mod.id }}
       mod_name: ${{ steps.properties.outputs.mod.name }}
-      versions: ${{ fromJson(steps.versions.outputs.versions).versions }}
+      versions: ${{ steps.versions.outputs.versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6

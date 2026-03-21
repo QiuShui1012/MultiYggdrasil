@@ -29,7 +29,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        version: ${{ needs.setup.outputs.versions }}
+        version: ${{ fromJson(needs.setup.outputs.versions).versions }}
     uses: ./.github/workflows/build_and_test.yml
     with:
       version: ${{ matrix.version }}
