@@ -42,8 +42,18 @@ jobs:
       PR_BUILD: ${{ inputs.pr_build }}
       VERSION_TYPE: ${{ inputs.version_type }}
     steps:
+      - name: Debug - Check Versions Folders
+        run: |
+          VERSIONS=$(ls -R ./versions/${{ inputs.version }}/build/libs/*)
+          echo "$VERSIONS"
+
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Debug - Check Versions Folders
+        run: |
+          VERSIONS=$(ls -R ./versions/${{ inputs.version }}/build/libs/*)
+          echo "$VERSIONS"
 
       - name: Read Properties
         id: properties
@@ -55,7 +65,7 @@ jobs:
       - name: Get Version
         id: version
         run: |
-          MESSAGE=$(ls ./versions/${{ inputs.version }}/build/libs/*.jar | grep sources.jar -v | awk -F '${{ inputs.mod_id }}-${{ inputs.version }}-|.jar' '{print $2}')
+          MESSAGE=$(ls ./versions/${{ inputs.version }}/build/libs/* | grep sources.jar -v | awk -F '${{ inputs.mod_id }}-${{ inputs.version }}-|.jar' '{print $2}')
           echo "version=$MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Capture Build Artifacts

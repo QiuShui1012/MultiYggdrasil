@@ -50,8 +50,3 @@ jobs:
 
       - name: Build
         run: ./gradlew build
-
-      - name: Debug - Check Versions Folders
-        run: |
-          ROOT=$(ls -R ./*)
-          echo "$ROOT"
