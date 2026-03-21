@@ -1,0 +1,118 @@
+name: Build and Test
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: string
+      version_type:
+        description: 'Version Type'
+        required: true
+        type: string
+      mod_id:
+        description: 'Mod ID'
+        required: true
+        type: string
+      mod_name:
+        description: 'Mod Name'
+        required: true
+        type: string
+      ci_build:
+        description: 'CI Build'
+        required: true
+        type: boolean
+      pr_build:
+        description: 'PR Build'
+        required: true
+        type: boolean
+      gametest:
+        description: 'Should GameTest'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    env:
+      NOT_DEV: true
+      CI_BUILD: ${{ inputs.ci_build }}
+      PR_BUILD: ${{ inputs.pr_build }}
+      VERSION_TYPE: ${{ inputs.version_type }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v3
+
+      - name: Read Properties
+        id: 'properties'
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: versions/${{ inputs.version }}/gradle.properties
+          properties: 'java_version dependencies.minecraft_version'
+
+      - name: Setup Java ${{ steps.properties.outputs.java_version }}
+        uses: actions/setup-java@v3.6.0
+        with:
+          distribution: zulu
+          java-version: ${{ steps.properties.outputs.java_version }}
+
+      - name: Make Gradle Wrapper Executable
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build
+        run: ./gradlew :${{ inputs.version }}:build
+
+      - name: Get Version
+        id: version
+        run: |
+          MESSAGE=$(ls ${{ inputs.version }}/build/libs/* | grep sources.jar -v | awk -F '${{ inputs.mod_id }}-${{ inputs.version }}-|.jar' '{print $2}')
+          echo "version=$MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: Capture Build Artifacts
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: "${{ inputs.mod_name }} ${{ inputs.version }} ${{ steps.version.outputs.version }}"
+          path: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+
+      - name: Game Test
+        if: ${{ inputs.gametest }}
+        uses: Anvil-Dev/dedicated-server-launch-test@1.21.11-neoforge
+        with:
+          mod: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+
+      - name: Upload Release Jar
+        if: ${{ !inputs.ci_build && !inputs.pr_build }}
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: |
+            ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+
+      - name: Publish Mod
+        uses: Kir-Antipov/mc-publish@v3.3
+        continue-on-error: true
+        with:
+          name: "${{ inputs.mod_name }} ${{ inputs.version }} v${{ steps.version.outputs.version }}"
+          version: ${{ steps.version.outputs.version }}
+          game-versions: ${{ steps.properties.outputs.dependencies.minecraft_version }}
+          version-type: ${{ env.VERSION_TYPE }}
+          fail-mode: skip
+
+          modrinth-id: LstvoJcB
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+
+          curseforge-id: 1303093
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          files: |
+            build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+            build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}-sources.jar
