@@ -43,7 +43,7 @@ jobs:
         id: versions
         run: |
           VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
-          echo 'versions=$VERSIONS' >> $GITHUB_OUTPUT
+          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
   build:
     name: Build Version ${{ matrix.version }}
