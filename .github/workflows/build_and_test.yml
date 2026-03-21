@@ -14,10 +14,12 @@ on:
         description: 'Mod ID'
         required: true
         type: string
+        default: 'multiyggdrasil'
       mod_name:
         description: 'Mod Name'
         required: true
         type: string
+        default: 'MultiYggdrasil'
       ci_build:
         description: 'CI Build'
         required: true

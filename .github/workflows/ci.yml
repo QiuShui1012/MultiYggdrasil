@@ -36,6 +36,6 @@ jobs:
       version_type: snapshot
       ci_build: true
       pr_build: false
-      mod_id: '${{ needs.setup.outputs.mod_id }}'
-      mod_name: '${{ needs.setup.outputs.mod_name }}'
+      mod_id: "${{ needs.setup.outputs.mod_id }}"
+      mod_name: "${{ needs.setup.outputs.mod_name }}"
       gametest: true

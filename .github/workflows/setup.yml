@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Read Properties
-        id: properties
+        id: 'properties'
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: gradle.properties
@@ -40,7 +40,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build
         run: ./gradlew :build
