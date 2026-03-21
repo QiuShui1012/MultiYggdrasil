@@ -46,11 +46,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Read Properties
-        id: 'properties'
+        id: properties
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: versions/${{ inputs.version }}/gradle.properties
-          properties: 'java_version dependencies.minecraft_version'
+          properties: 'java_version action.minecraft_version action.mod_loader action.loader_version'
 
       - name: Setup Java ${{ steps.properties.outputs.java_version }}
         uses: actions/setup-java@v5.2.0
@@ -82,9 +82,12 @@ jobs:
 
       - name: Game Test
         if: ${{ inputs.gametest }}
-        uses: Anvil-Dev/dedicated-server-launch-test@"${{ inputs.version }}"
+        uses: Anvil-Dev/dedicated-server-launch-test@universal
         with:
-          mod: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+          minecraft_version: ${{ steps.properties.outputs.action.minecraft_version }}
+          mod_loader: ${{ steps.properties.outputs.action.mod_loader }}
+          loader_version: ${{ steps.properties.outputs.action.loader_version }}
+          mods: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Upload Release Jar
         if: ${{ !inputs.ci_build && !inputs.pr_build }}
