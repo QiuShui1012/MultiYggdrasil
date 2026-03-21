@@ -50,3 +50,10 @@ jobs:
         run: |
           VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
           echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
+
+      - name: Debug - Check Versions Folders
+        run: |
+          ROOT=$(ls ./*)
+          echo "$ROOT"
+          VERSIONS=$(ls versions/*)
+          echo "$VERSIONS"
