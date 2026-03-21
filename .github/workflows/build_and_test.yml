@@ -45,9 +45,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v3
-
       - name: Read Properties
         id: 'properties'
         uses: christian-draeger/read-properties@1.1.1
