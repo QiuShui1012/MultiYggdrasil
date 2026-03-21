@@ -82,7 +82,7 @@ jobs:
 
       - name: Game Test
         if: ${{ inputs.gametest }}
-        uses: QiuShui1012/dedicated-server-launch-test@${{ inputs.version }}
+        uses: Anvil-Dev/dedicated-server-launch-test@"${{ inputs.version }}"
         with:
           mod: ${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
 
