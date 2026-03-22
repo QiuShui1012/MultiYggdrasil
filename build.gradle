@@ -1,8 +1,7 @@
 plugins {
-    id("gg.essential.loom").version("${essential_loom_version}").apply(false)
-    id("com.replaymod.preprocess").version("${preprocessor_version}")
-    id("org.ajoberstar.grgit").version("${grgit_version}")
-    id("io.freefair.lombok").version("${lombok_version}")
+    alias libs.plugins.essential apply false
+    alias libs.plugins.preprocessor
+    alias libs.plugins.lombok
 }
 
 preprocess {

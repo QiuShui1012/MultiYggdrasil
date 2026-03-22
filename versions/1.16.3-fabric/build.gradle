@@ -1,8 +1,5 @@
-import com.replaymod.gradle.preprocess.PreprocessTask
-
 plugins {
     id("maven-publish")
-    id("top.hendrixshen.replace-token").version("${replace_token_version}")
 }
 
 final int mcVersion = project.mcVersion
@@ -75,12 +72,12 @@ dependencies {
     minecraft("com.mojang:minecraft:${project.property("dependencies.minecraft_version")}")
     mappings loom.officialMojangMappings()
 
-    api(include("io.github.wasabithumb:jtoml-all:${rootProject.property("jtoml_version")}"))
+    api(libs.jtoml)
+    include(libs.jtoml)
     switch (modPlatform) {
         case "fabric":
             implementation("com.google.code.findbugs:jsr305:3.0.2")
-            modImplementation "net.fabricmc:fabric-loader:${project.property("fabric_version")}"
-            modImplementation "net.fabricmc.fabric-api:fabric-api:${project.property("dependencies.fabric_api_version")}"
+            modImplementation libs.fabric.loader
             break
         case "forge":
             forge("net.minecraftforge:forge:${project.property("dependencies.minecraft_version")}-${project.property("dependencies.forge_version")}")
@@ -370,6 +367,4 @@ tasks.register("cleanRunServer", DefaultTask.class) {
     }
 }
 
-lombok {
-    version = "1.18.34"
-}
+lombok.version = "1.18.34"
