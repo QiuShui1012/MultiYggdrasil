@@ -40,3 +40,4 @@ jobs:
       mod_id: "${{ needs.setup.outputs.mod_id }}"
       mod_name: "${{ needs.setup.outputs.mod_name }}"
       gametest: true
+    secrets: inherit
