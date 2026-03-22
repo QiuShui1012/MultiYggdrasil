@@ -109,6 +109,7 @@ jobs:
         with:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} v${{ steps.version.outputs.version }}"
           version: ${{ steps.version.outputs.version }}
+          loaders: ${{ steps.properties.outputs.action-mod_loader }}
           game-versions: ${{ steps.properties.outputs.action-minecraft_version }}
           version-type: ${{ env.VERSION_TYPE }}
           fail-mode: skip
