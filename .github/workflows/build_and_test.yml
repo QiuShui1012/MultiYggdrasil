@@ -66,7 +66,7 @@ jobs:
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: versions/${{ inputs.version }}/gradle.properties
-          properties: 'action.minecraft_version action.mod_loader action.loader_version'
+          properties: 'action.minecraft_version action.mod_loader action.loader_version action.java_version'
 
       - name: Get Version
         id: version
@@ -79,6 +79,13 @@ jobs:
         with:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} ${{ steps.version.outputs.version }}"
           path: versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+
+      - name: Setup Java ${{ steps.properties.outputs.action-java_version }} For Game Test
+        if: ${{ inputs.gametest }}
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: zulu
+          java-version: ${{ steps.properties.outputs.action-java_version }}
 
       - name: Game Test
         if: ${{ inputs.gametest }}
