@@ -75,7 +75,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${project.property("dependencies.minecraft_version")}")
     mappings loom.officialMojangMappings()
 
-    implementation(include("io.github.wasabithumb:jtoml:${rootProject.property("jtoml_version")}"))
+    api(include("io.github.wasabithumb:jtoml-all:${rootProject.property("jtoml_version")}"))
     switch (modPlatform) {
         case "fabric":
             implementation("com.google.code.findbugs:jsr305:3.0.2")

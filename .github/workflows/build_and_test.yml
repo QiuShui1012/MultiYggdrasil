@@ -111,7 +111,7 @@ jobs:
           version: ${{ steps.version.outputs.version }}
           loaders: ${{ steps.properties.outputs.action-mod_loader }}
           game-versions: ${{ steps.properties.outputs.action-minecraft_version }}
-          version-type: ${{ env.VERSION_TYPE }}
+          version-type: ${{ env.VERSION_TYPE == 'release' && 'beta' || 'release' }}
           fail-mode: skip
 
           modrinth-id: LstvoJcB

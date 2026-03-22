@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       version: ${{ matrix.version }}
-      version_type: snapshot
+      version_type: beta
       ci_build: true
       pr_build: false
       mod_id: "${{ needs.setup.outputs.mod_id }}"

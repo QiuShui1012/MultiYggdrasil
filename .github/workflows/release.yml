@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       version: ${{ matrix.version }}
-      version_type: ${{ github.event.release.prerelease && 'snapshot' || 'release' }}
+      version_type: ${{ github.event.release.prerelease && 'beta' || 'release' }}
       ci_build: false
       pr_build: false
       mod_id: "${{ needs.setup.outputs.mod_id }}"

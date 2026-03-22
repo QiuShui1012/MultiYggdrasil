@@ -67,9 +67,8 @@ ext {
         String type = env.BUILD_TYPE
         switch (type) {
             case 'release': return ''
-            case 'snapshot': return "+snapshot.${number}"
-            case 'hotfix': return "+hotfix.${number}"
-            case 'pr': return "+pr.${number}"
+            case 'beta': return "+snapshot.${number}"
+            case 'alpha': return "+pr.${number}"
         }
         return "+build.${number}"
     }

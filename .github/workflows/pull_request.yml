@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       version: ${{ matrix.version }}
-      version_type: pr
+      version_type: alpha
       ci_build: false
       pr_build: true
       mod_id: "${{ needs.setup.outputs.mod_id }}"
