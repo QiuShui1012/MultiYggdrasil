@@ -4,6 +4,7 @@ fabric-loader = "0.18.4"
 jtoml = "1.4.2"
 
 essential = "1.15.48"
+shadow = "9.4.0"
 preprocessor = "c5abb4fb12"
 lombok = "8.7.1"
 
@@ -15,5 +16,6 @@ jtoml = { group = "io.github.wasabithumb", name = "jtoml-all", version.ref = "jt
 [plugins]
 
 essential = { id = "gg.essential.loom", version.ref = "essential" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 preprocessor = { id = "com.replaymod.preprocess", version.ref = "preprocessor" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombok" }

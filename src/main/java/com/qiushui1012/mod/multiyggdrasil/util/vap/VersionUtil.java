@@ -42,6 +42,11 @@ public class VersionUtil {
                     .add("name='" + getName() + "'")
                     .toString();
             }
+
+            @Override
+            public String toString() {
+                return this.asString();
+            }
         };
     }
 }

@@ -1,14 +1,18 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
-    id("maven-publish")
+    id "java"
+    alias libs.plugins.shadow
+    id "maven-publish"
 }
 
 final int mcVersion = project.mcVersion
 final int authlibVersion = Integer.parseInt(project.property("dependencies.authlib_version") as String)
 final String modPlatform = project.modPlatform
 
-apply(plugin: "gg.essential.loom")
-apply(plugin: "com.replaymod.preprocess")
-apply(plugin: "io.freefair.lombok")
+apply plugin: "gg.essential.loom"
+apply plugin: "com.replaymod.preprocess"
+apply plugin: "io.freefair.lombok"
 
 boolean fabricLike = modPlatform == "fabric" || modPlatform == "quilt"
 boolean forgeLike = modPlatform == "forge" || modPlatform == "neoforge"
@@ -27,9 +31,7 @@ preprocess {
     patternAnnotation.set("com.qiushui1012.mod.multiyggdrasil.util.vap.VAPPattern")
 }
 
-loom {
-    silentMojangMappingsLicense()
-}
+loom.silentMojangMappingsLicense()
 
 repositories {
     mavenLocal()
@@ -67,23 +69,27 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    shadowing
+    api.extendsFrom shadowing
+}
+
 dependencies {
     // Development environment
     minecraft("com.mojang:minecraft:${project.property("dependencies.minecraft_version")}")
     mappings loom.officialMojangMappings()
 
-    api(libs.jtoml)
-    include(libs.jtoml)
+    shadowing libs.jtoml
     switch (modPlatform) {
         case "fabric":
-            implementation("com.google.code.findbugs:jsr305:3.0.2")
+            implementation "com.google.code.findbugs:jsr305:3.0.2"
             modImplementation libs.fabric.loader
             break
         case "forge":
             forge("net.minecraftforge:forge:${project.property("dependencies.minecraft_version")}-${project.property("dependencies.forge_version")}")
             if (mcVersion < 11502) {
-                annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-                implementation("org.spongepowered:mixin:0.8.5")
+                annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+                implementation "org.spongepowered:mixin:0.8.5"
             }
             compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
             implementation(include("io.github.llamalad7:mixinextras-forge:0.5.3"))
@@ -240,6 +246,13 @@ tasks.named('sourcesJar').configure {
     dependsOn delombok
 }
 
+tasks.named('shadowJar', ShadowJar).configure {
+    configurations = [project.configurations.shadowing]
+    relocate 'io.github.wasabithumb', "${rootProject.property("mod.maven_group")}.shadowed.io.github.wasabithumb"
+
+    archiveClassifier = null
+}
+
 tasks.named("runClient").configure {
     dependsOn tasks.named("build")
 }
@@ -260,7 +273,7 @@ jar {
 }
 
 artifacts {
-    archives tasks.jar
+    archives tasks.shadowJar
     archives tasks.sourcesJar
 }
 
