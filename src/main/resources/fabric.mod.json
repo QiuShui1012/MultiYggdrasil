@@ -19,7 +19,6 @@
     "sources": "${mod_sources}"
   },
   "environment": "*",
-  "accessWidener" : "multiyggdrasil.classTweaker",
   "entrypoints": {
     "main": [
       "com.qiushui1012.mod.multiyggdrasil.MultiYggdrasilPlatform"

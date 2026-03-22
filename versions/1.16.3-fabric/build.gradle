@@ -124,15 +124,6 @@ loom {
     }
 
     if (fabricLike) {
-        def path = "src/main/resources/${project.parent.property("mod.id")}.classTweaker"
-
-        def accessWidenerFile = file(path)
-        if (!accessWidenerFile.exists()) {
-            accessWidenerFile = rootProject.file(path)
-        }
-
-        accessWidenerPath = accessWidenerFile
-
         mixin {
             // useLegacyMixinAp.set(true)
         }
@@ -140,7 +131,6 @@ loom {
 
     if (modPlatform == "forge") {
         forge {
-            convertAccessWideners.set(true)
             mixinConfig("${project.parent.property("mod.id")}.mixins.json")
         }
     }
@@ -249,22 +239,22 @@ tasks.named('sourcesJar').configure {
 tasks.named('shadowJar', ShadowJar).configure {
     configurations = [project.configurations.shadowing]
     relocate 'io.github.wasabithumb', "${rootProject.property("mod.maven_group")}.shadowed.io.github.wasabithumb"
+    mergeServiceFiles()
 
     from(rootProject.file("LICENSE"))
     from(rootProject.file("README.md"))
     from(rootProject.file("README.en.md"))
 
+    if (mcVersion <= 11404 && modPlatform == 'forge') {
+        exclude("com/qiushui1012/mod/multiyggdrasil/mixin/LogicalServerSaveMixin.class")
+    }
     if (authlibVersion >= 50046) {
-        exclude("zh/qiushui/mod/multiyggdrasil/auth/MultiYggdrasilUserAuth.class")
-        exclude("zh/qiushui/mod/multiyggdrasil/mixin/YggdrasilAuthServiceAccessor.class")
-        exclude("zh/qiushui/mod/multiyggdrasil/util/RequestUtil.class")
+        exclude("com/qiushui1012/mod/multiyggdrasil/auth/MultiYggdrasilUserAuth.class")
+        exclude("com/qiushui1012/mod/multiyggdrasil/mixin/YggdrasilAuthServiceAccessor.class")
+        exclude("com/qiushui1012/mod/multiyggdrasil/util/RequestUtil.class")
     }
-    exclude("zh/qiushui/mod/multiyggdrasil/util/vap/Patterns.class")
-    exclude("zh/qiushui/mod/multiyggdrasil/util/vap/VAPPattern.class")
-
-    filesMatching('META-INF/services/io.github.wasabithumb**') {
-        it.name = "${rootProject.property("mod.maven_group")}.shadowed." + name
-    }
+    exclude("com/qiushui1012/mod/multiyggdrasil/util/vap/Patterns.class")
+    exclude("com/qiushui1012/mod/multiyggdrasil/util/vap/VAPPattern.class")
 
     archiveClassifier = null
 }

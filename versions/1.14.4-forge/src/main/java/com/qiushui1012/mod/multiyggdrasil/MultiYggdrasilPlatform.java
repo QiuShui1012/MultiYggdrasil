@@ -11,7 +11,7 @@ public class MultiYggdrasilPlatform {
     }
 
     @SubscribeEvent
-    private static void onSave(WorldEvent.Save event) {
+    public static void onSave(WorldEvent.Save event) {
         YggdrasilConfig.save(MultiYggdrasil.SERVERS_CONFIG);
     }
 }
