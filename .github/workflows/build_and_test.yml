@@ -66,7 +66,7 @@ jobs:
         uses: christian-draeger/read-properties@1.1.1
         with:
           path: versions/${{ inputs.version }}/gradle.properties
-          properties: 'action.minecraft_version action.mod_loader action.loader_version action.java_version action.extra_mods'
+          properties: 'dependencies.minecraft_dependency action.minecraft_version action.mod_loader action.loader_version action.java_version action.extra_mods'
 
       - name: Get Version
         id: version
@@ -111,7 +111,7 @@ jobs:
           name: "${{ inputs.mod_name }} ${{ inputs.version }} v${{ steps.version.outputs.version }}"
           version: ${{ steps.version.outputs.version }}
           loaders: ${{ steps.properties.outputs.action-mod_loader }}
-          game-versions: ${{ steps.properties.outputs.action-minecraft_version }}
+          game-versions: ${{ steps.properties.outputs.dependencies-minecraft_dependency }}
           version-type: ${{ env.VERSION_TYPE }}
           fail-mode: skip
 
