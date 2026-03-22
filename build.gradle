@@ -14,7 +14,6 @@ preprocess {
     mc11502_fabric.link(mc11404_fabric, null)
     mc11603_fabric.link(mc11502_fabric, file("versions/mappings-1.16.3-to-1.15.txt"))
 
-
     var mc11404_forge = createNode("1.14.4-forge", 1_14_04, 'mojang')
     var mc11502_forge = createNode("1.15.2-forge", 1_15_02, 'mojang')
     var mc11603_forge = createNode("1.16.3-forge", 1_16_03, 'mojang')

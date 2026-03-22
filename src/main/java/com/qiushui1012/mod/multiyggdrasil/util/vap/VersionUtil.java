@@ -35,7 +35,7 @@ public class VersionUtil {
 
             @Override
             public String asString() {
-                return new StringJoiner(", ", "", "")
+                return new StringJoiner(", ", "{", "}")
                     .add("authHost='" + getAuthHost() + "'")
                     .add("accountsHost='" + getAccountsHost() + "'")
                     .add("sessionHost='" + getSessionHost() + "'")

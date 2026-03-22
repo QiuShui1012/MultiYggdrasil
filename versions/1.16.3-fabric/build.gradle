@@ -250,15 +250,6 @@ tasks.named('shadowJar', ShadowJar).configure {
     configurations = [project.configurations.shadowing]
     relocate 'io.github.wasabithumb', "${rootProject.property("mod.maven_group")}.shadowed.io.github.wasabithumb"
 
-    archiveClassifier = null
-}
-
-tasks.named("runClient").configure {
-    dependsOn tasks.named("build")
-}
-
-jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from(rootProject.file("LICENSE"))
     from(rootProject.file("README.md"))
     from(rootProject.file("README.en.md"))
@@ -270,6 +261,16 @@ jar {
     }
     exclude("zh/qiushui/mod/multiyggdrasil/util/vap/Patterns.class")
     exclude("zh/qiushui/mod/multiyggdrasil/util/vap/VAPPattern.class")
+
+    filesMatching('META-INF/services/io.github.wasabithumb**') {
+        it.name = "${rootProject.property("mod.maven_group")}.shadowed." + name
+    }
+
+    archiveClassifier = null
+}
+
+tasks.named("runClient").configure {
+    dependsOn tasks.named("build")
 }
 
 artifacts {
