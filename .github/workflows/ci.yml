@@ -28,6 +28,7 @@ jobs:
     permissions: write-all
     needs: setup
     strategy:
+      fail-fast: false
       matrix:
         version: ${{ fromJson(needs.setup.outputs.versions).versions }}
     uses: ./.github/workflows/build_and_test.yml

@@ -61,11 +61,6 @@ jobs:
       - name: Build Subproject
         run: ./gradlew :${{ inputs.version }}:build
 
-      - name: Debug - Check Versions Folders
-        run: |
-          VERSIONS=$(ls -R ./versions/${{ inputs.version }}/build/libs/*)
-          echo "$VERSIONS"
-
       - name: Read Properties
         id: properties
         uses: christian-draeger/read-properties@1.1.1
