@@ -1,13 +1,9 @@
 package com.qiushui1012.mod.multiyggdrasil.source;
 
-//#if AUTHLIB < 10600
-//$$ import com.qiushui1012.mod.multiyggdrasil.util.vap.VersionUtil;
-//#else
-import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
-//#endif
-import com.mojang.datafixers.util.Pair;
-import io.github.wasabithumb.jtoml.value.table.TomlTable;
+import com.qiushui1012.mod.multiyggdrasil.util.vap.VersionUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class OfficialYggdrasilSource extends BaseYggdrasilSource {
@@ -49,19 +45,19 @@ public class OfficialYggdrasilSource extends BaseYggdrasilSource {
     }
 
     @Override
-    public Pair<String, TomlTable> serialize() {
-        TomlTable data = TomlTable.create();
-        data.put("type", this.getType().name());
-        if (!Objects.equals(this.authHost, YggdrasilEnvironment.PROD.getAuthHost())) {
-            data.put("authHost", this.authHost);
+    public List<String> serialize() {
+        List<String> result = new ArrayList<>();
+        result.add("type = " + YggdrasilSourceType.OFFICIAL.name());
+        if (!Objects.equals(this.authHost, VersionUtil.DEFAULT.getAuthHost())) {
+            result.add("authHost = " + this.authHost);
         }
-        if (!Objects.equals(this.accountsHost, YggdrasilEnvironment.PROD.getAccountsHost())) {
-            data.put("accountHost", this.accountsHost);
+        if (!Objects.equals(this.accountsHost, VersionUtil.DEFAULT.getAccountsHost())) {
+            result.add("accountHost = " + this.accountsHost);
         }
-        if (!Objects.equals(this.sessionHost, YggdrasilEnvironment.PROD.getSessionHost())) {
-            data.put("sessionHost", this.sessionHost);
+        if (!Objects.equals(this.sessionHost, VersionUtil.DEFAULT.getSessionHost())) {
+            result.add("sessionHost = " + this.sessionHost);
         }
-        data.put("ordinal", this.ordinal);
-        return Pair.of(this.name, data);
+        result.add("ordinal = " + this.ordinal);
+        return result;
     }
 }

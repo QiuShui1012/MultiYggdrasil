@@ -7,12 +7,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.qiushui1012.mod.multiyggdrasil.MultiYggdrasil;
-import com.qiushui1012.mod.multiyggdrasil.config.YggdrasilConfig;
 
 @Mixin(ServerLevel.class)
 abstract class LogicalServerSaveMixin {
     @Inject(method = "save", at = @At("RETURN"))
     private void saveConfig(ProgressListener progressListener, boolean bl, boolean bl2, CallbackInfo ci) {
-        YggdrasilConfig.save(MultiYggdrasil.SERVERS_CONFIG);
+        MultiYggdrasil.SERVERS_CONFIG.save();
     }
 }

@@ -5,11 +5,11 @@ package com.qiushui1012.mod.multiyggdrasil.source;
 //#else
 import com.mojang.authlib.Environment;
 //#endif
-import com.mojang.datafixers.util.Pair;
-import io.github.wasabithumb.jtoml.value.table.TomlTable;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import com.qiushui1012.mod.multiyggdrasil.util.vap.VersionUtil;
+
+import java.util.List;
 
 @Getter
 public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSource> {
@@ -29,7 +29,7 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
 
     public abstract String getSessionRoot();
 
-    public abstract Pair<String, TomlTable> serialize();
+    public abstract List<String> serialize();
 
     @Override
     public int compareTo(@NotNull BaseYggdrasilSource that) {

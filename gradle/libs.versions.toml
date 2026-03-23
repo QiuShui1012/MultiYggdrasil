@@ -1,7 +1,6 @@
 [versions]
 
 fabric-loader = "0.18.4"
-jtoml = "1.4.2"
 
 essential = "1.15.48"
 shadow = "9.4.0"
@@ -11,7 +10,6 @@ lombok = "8.7.1"
 [libraries]
 
 fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
-jtoml = { group = "io.github.wasabithumb", name = "jtoml-all", version.ref = "jtoml" }
 
 [plugins]
 

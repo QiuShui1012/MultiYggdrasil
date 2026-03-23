@@ -3,7 +3,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id "java"
     alias libs.plugins.shadow
-    id "maven-publish"
 }
 
 final int mcVersion = project.mcVersion
@@ -79,7 +78,6 @@ dependencies {
     minecraft("com.mojang:minecraft:${project.property("dependencies.minecraft_version")}")
     mappings loom.officialMojangMappings()
 
-    shadowing libs.jtoml
     switch (modPlatform) {
         case "fabric":
             implementation "com.google.code.findbugs:jsr305:3.0.2"
@@ -91,8 +89,6 @@ dependencies {
                 annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
                 implementation "org.spongepowered:mixin:0.8.5"
             }
-            compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3"))
-            implementation(include("io.github.llamalad7:mixinextras-forge:0.5.3"))
             break
         case "neoforge":
             neoForge("net.neoforged:neoforge:${project.property("dependencies.neoforge_version")}")
@@ -236,12 +232,11 @@ tasks.named('sourcesJar').configure {
     dependsOn delombok
 }
 
-tasks.named('shadowJar', ShadowJar).configure {
+tasks.named('shadowJar', ShadowJar).configure { ShadowJar it ->
     configurations = [project.configurations.shadowing]
-    relocate 'io.github.wasabithumb', "${rootProject.property("mod.maven_group")}.shadowed.io.github.wasabithumb"
-    mergeServiceFiles()
 
     from(rootProject.file("LICENSE"))
+    from(rootProject.file("LICENSE_authlib-injector"))
     from(rootProject.file("README.md"))
     from(rootProject.file("README.en.md"))
 
@@ -266,35 +261,6 @@ tasks.named("runClient").configure {
 artifacts {
     archives tasks.shadowJar
     archives tasks.sourcesJar
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = "${this.project.parent.property("mod.artifact_name")}-${project.name}"
-            version = "${this.project.getVersion(this.project.parent)}"
-
-            from(this.project.components.java)
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        def MAVEN_URL = System.getenv("MAVEN_URL")
-        if (MAVEN_URL != null) {
-            maven {
-                url MAVEN_URL
-                credentials {
-                    username System.getenv("MAVEN_USERNAME")
-                    password System.getenv("MAVEN_PASSWORD")
-                }
-            }
-        } else {
-            mavenLocal()
-        }
-    }
 }
 
 tasks.withType(Javadoc).configureEach { Javadoc task ->

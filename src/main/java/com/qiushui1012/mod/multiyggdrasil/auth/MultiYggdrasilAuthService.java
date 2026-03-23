@@ -12,7 +12,7 @@ import com.mojang.authlib.yggdrasil.response.Response;
 import com.qiushui1012.mod.multiyggdrasil.MultiYggdrasil;
 import com.qiushui1012.mod.multiyggdrasil.source.BaseYggdrasilSource;
 import com.qiushui1012.mod.multiyggdrasil.util.RequestUtil;
-import com.qiushui1012.mod.multiyggdrasil.util.vap.Patterns;
+import com.qiushui1012.mod.multiyggdrasil.util.vap.VersionUtil;
 
 import java.net.Proxy;
 import java.net.URL;
@@ -60,7 +60,7 @@ public class MultiYggdrasilAuthService extends YggdrasilAuthenticationService {
     private static List<Environment> determineEnvironment() {
         List<BaseYggdrasilSource> envs = MultiYggdrasil.SERVERS_CONFIG.getSources();
         if (envs.isEmpty()) return Lists.newArrayList(
-            EnvironmentParser.getEnvironmentFromProperties().orElse(Patterns.getDefaultEnv())
+            EnvironmentParser.getEnvironmentFromProperties().orElse(VersionUtil.DEFAULT)
         );
         Collections.sort(envs);
         List<Environment> result = new ArrayList<>();

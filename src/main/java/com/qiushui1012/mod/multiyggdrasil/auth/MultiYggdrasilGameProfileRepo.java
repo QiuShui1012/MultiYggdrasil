@@ -107,6 +107,7 @@ public class MultiYggdrasilGameProfileRepo implements GameProfileRepository {
                     );
                     failCount = 0;
 
+                    // noinspection DataFlowIssue
                     LOGGER.debug("Page {} returned {} results, parsing", 0, response.getProfiles().length);
 
                     for (GameProfile profile : response.getProfiles()) {

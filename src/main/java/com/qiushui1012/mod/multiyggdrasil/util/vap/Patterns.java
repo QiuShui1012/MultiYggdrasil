@@ -1,28 +1,35 @@
 package com.qiushui1012.mod.multiyggdrasil.util.vap;
 
+import java.nio.file.Path;
+
 //#if AUTHLIB >= 10600
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.EnvironmentParser;
-import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
+//#endif
+
+//#if FABRIC
+import net.fabricmc.loader.api.FabricLoader;
+//#elseif FORGE
+//$$ import net.minecraftforge.fml.loading.FMLPaths;
 //#endif
 
 @SuppressWarnings("unused")
 public class Patterns {
     @VAPPattern
-    public static Environment getDefaultEnv() {
+    public static Environment getEnvFromProperties() {
         //#if AUTHLIB < 10600
-        //$$ return VersionUtil.createEnv("https://authserver.mojang.com", "https://api.mojang.com", "https://sessionserver.mojang.com", "MojangOfficial");
+        //$$ return VersionUtil.DEFAULT;
         //#else
-        return YggdrasilEnvironment.PROD;
+        return EnvironmentParser.getEnvironmentFromProperties().orElse(VersionUtil.DEFAULT);
         //#endif
     }
 
     @VAPPattern
-    public static Environment getEnvFromProperties() {
-        //#if AUTHLIB < 10600
-        //$$ return Patterns.getDefaultEnv();
-        //#else
-        return EnvironmentParser.getEnvironmentFromProperties().orElse(Patterns.getDefaultEnv());
+    public static Path getConfigDir() {
+        //#if FABRIC
+        return FabricLoader.getInstance().getConfigDir();
+        //#elseif FORGE
+        //$$ return FMLPaths.CONFIGDIR.get();
         //#endif
     }
 }

@@ -1,7 +1,7 @@
 package com.qiushui1012.mod.multiyggdrasil.source;
 
-import com.mojang.datafixers.util.Pair;
-import io.github.wasabithumb.jtoml.value.table.TomlTable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlessingSkinYggdrasilSource extends BaseYggdrasilSource {
     private final String apiRoot;
@@ -32,11 +32,11 @@ public class BlessingSkinYggdrasilSource extends BaseYggdrasilSource {
     }
 
     @Override
-    public Pair<String, TomlTable> serialize() {
-        TomlTable data = TomlTable.create();
-        data.put("type", this.getType().name());
-        data.put("apiRoot", this.apiRoot);
-        data.put("ordinal", this.ordinal);
-        return Pair.of(this.name, data);
+    public List<String> serialize() {
+        List<String> result = new ArrayList<>();
+        result.add("type = " + YggdrasilSourceType.BLESSING_SKIN.name());
+        result.add("apiRoot = " + this.apiRoot);
+        result.add("ordinal = " + this.ordinal);
+        return result;
     }
 }
