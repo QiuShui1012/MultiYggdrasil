@@ -67,8 +67,8 @@ ext {
             case 'release': return ''
             case 'beta': return "+snapshot.${number}"
             case 'alpha': return "+pr.${number}"
+            default: return "+build.${number}"
         }
-        return "+build.${number}"
     }
 
     getVersion = { Project proj ->
