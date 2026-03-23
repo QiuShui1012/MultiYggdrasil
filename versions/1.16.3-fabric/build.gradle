@@ -119,6 +119,11 @@ loom {
         isEnabled.set(false)
     }
 
+    mixin {
+        add sourceSets.main, 'mixins.multiyggdrasil.refmap.json'
+        useLegacyMixinAp = true
+    }
+
     if (fabricLike) {
         mixin {
             // useLegacyMixinAp.set(true)
