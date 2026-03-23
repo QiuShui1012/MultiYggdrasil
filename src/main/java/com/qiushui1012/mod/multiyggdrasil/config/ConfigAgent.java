@@ -38,6 +38,7 @@ public class ConfigAgent {
                     writer.newLine();
                 }
             }
+            MultiYggdrasil.LOGGER.info("Successfully saved config");
         } catch (IOException e) {
             MultiYggdrasil.LOGGER.warn("Cannot save config to {}.", configPath, e);
         }
