@@ -96,6 +96,7 @@ jobs:
           loader_version: '${{ steps.properties.outputs.action-loader_version }}'
           mods: versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
           extra-mods: '${{ steps.properties.outputs.action-extra_mods }}'
+          quiet-setup: True
 
       - name: Upload Release Jar
         if: ${{ !inputs.ci_build && !inputs.pr_build }}
