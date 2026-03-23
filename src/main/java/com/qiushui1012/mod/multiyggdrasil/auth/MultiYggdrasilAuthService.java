@@ -57,15 +57,8 @@ public class MultiYggdrasilAuthService extends YggdrasilAuthenticationService {
     @Getter
     private final String clientToken;
 
-    public MultiYggdrasilAuthService(
-        final Proxy proxy,
-        final String clientToken
-    ) {
-        this(
-            proxy,
-            clientToken,
-            determineEnvironment()
-        );
+    public MultiYggdrasilAuthService(final Proxy proxy) {
+        this(proxy, null, determineEnvironment());
     }
 
     private MultiYggdrasilAuthService(
@@ -73,10 +66,7 @@ public class MultiYggdrasilAuthService extends YggdrasilAuthenticationService {
         final String clientToken,
         List<Environment> environments
     ) {
-        super(
-            proxy,
-            clientToken
-        );
+        super(proxy, clientToken);
         this.clientToken = clientToken;
         this.environments = environments;
         LOGGER.info("Environments: {}", environments);

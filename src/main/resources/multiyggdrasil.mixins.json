@@ -3,8 +3,7 @@
   "package": "com.qiushui1012.mod.multiyggdrasil.mixin",
   "mixins": [
     "LogicalServerSaveMixin",
-    "PhysicalServerStartMixin",
-    "YggdrasilAuthServiceAccessor"
+    "PhysicalServerStartMixin"
   ],
   "compatibilityLevel": "JAVA_${java_version}",
   "injectors": {
