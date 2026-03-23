@@ -62,7 +62,7 @@ ext {
 
     getVersionSuffix = {
         String number = env.GITHUB_RUN_NUMBER ? env.GITHUB_RUN_NUMBER : 'x'
-        String type = env.BUILD_TYPE
+        String type = env.VERSION_TYPE
         switch (type) {
             case 'release': return ''
             case 'beta': return "+snapshot.${number}"
