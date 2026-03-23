@@ -1,0 +1,19 @@
+[versions]
+
+fabric-loader = "0.18.4"
+
+essential = "1.15.48"
+shadow = "9.4.0"
+preprocessor = "c5abb4fb12"
+lombok = "8.7.1"
+
+[libraries]
+
+fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
+
+[plugins]
+
+essential = { id = "gg.essential.loom", version.ref = "essential" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+preprocessor = { id = "com.replaymod.preprocess", version.ref = "preprocessor" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
