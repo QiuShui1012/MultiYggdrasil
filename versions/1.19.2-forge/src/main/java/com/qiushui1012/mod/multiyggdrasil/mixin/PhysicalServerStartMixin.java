@@ -17,6 +17,7 @@ abstract class PhysicalServerStartMixin {
                      + "Lcom/mojang/authlib/yggdrasil/YggdrasilAuthenticationService;Ljava/io/File;"
                      + ")Lnet/minecraft/server/Services;"
         ),
+        index = 0,
         remap = false
     )
     private static YggdrasilAuthenticationService createBetter(YggdrasilAuthenticationService value) {

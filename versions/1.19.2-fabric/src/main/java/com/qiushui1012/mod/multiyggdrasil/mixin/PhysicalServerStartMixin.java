@@ -6,7 +6,6 @@ import net.minecraft.server.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Main.class)
 abstract class PhysicalServerStartMixin {
@@ -18,6 +17,7 @@ abstract class PhysicalServerStartMixin {
                      + "Lcom/mojang/authlib/yggdrasil/YggdrasilAuthenticationService;Ljava/io/File;"
                      + ")Lnet/minecraft/server/Services;"
         ),
+        index = 0,
         remap = false
     )
     private static YggdrasilAuthenticationService createBetter(YggdrasilAuthenticationService value) {
