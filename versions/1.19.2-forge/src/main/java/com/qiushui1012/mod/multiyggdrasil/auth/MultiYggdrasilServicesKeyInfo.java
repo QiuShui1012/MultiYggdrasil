@@ -24,7 +24,16 @@ public class MultiYggdrasilServicesKeyInfo implements ServicesKeyInfo {
     }
 
     private static PublicKey loadMojangPublicKey() {
-        try (InputStream in = ServicesKeyInfo.class.getResourceAsStream("/yggdrasil_session_pubkey.der")) {
+        try (
+            InputStream in =
+                //#if AUTHLIB != 40043
+                ServicesKeyInfo
+                //#else
+                //$$ MultiYggdrasilServicesKeyInfo
+                //#endif
+                    .class
+                    .getResourceAsStream("/yggdrasil_session_pubkey.der")
+        ) {
             return ParseUtil.parseX509PublicKey(ParseUtil.asBytes(in));
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException("Failed to load Mojang public key", e);
