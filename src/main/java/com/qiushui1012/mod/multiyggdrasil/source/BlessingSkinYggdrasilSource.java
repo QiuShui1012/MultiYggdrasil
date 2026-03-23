@@ -1,8 +1,11 @@
 package com.qiushui1012.mod.multiyggdrasil.source;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class BlessingSkinYggdrasilSource extends BaseYggdrasilSource {
     private final String apiRoot;
 

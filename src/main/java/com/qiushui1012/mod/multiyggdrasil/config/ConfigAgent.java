@@ -64,6 +64,13 @@ public class ConfigAgent {
             configRaw = IniParser.parseRaw(configPath);
         } catch (IOException | IllegalArgumentException e) {
             MultiYggdrasil.LOGGER.warn("Cannot load config. Use default config.", e);
+            //#if AUTHLIB >= 31100
+            //$$ for (BaseYggdrasilSource source : YggdrasilConfig.DEFAULT.getSources()) {
+            //$$     if (source instanceof BlessingSkinYggdrasilSource blessing) {
+            //$$         ParseUtil.getPublicKey(blessing.getApiRoot()).ifPresent(MultiYggdrasilServicesKeyInfo.PUBLIC_KEYS::add);
+            //$$     }
+            //$$ }
+            //#endif
             return YggdrasilConfig.DEFAULT;
         }
 
