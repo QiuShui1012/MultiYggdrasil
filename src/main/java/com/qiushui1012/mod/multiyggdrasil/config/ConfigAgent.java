@@ -95,7 +95,7 @@ public class ConfigAgent {
 
             switch (type) {
                 case OFFICIAL:
-                    String authHost = config.get(name.concat(".authHost"));
+                    String authHost = config.get("authHost");
                     if (authHost == null) {
                         authHost = VersionUtil.DEFAULT.getAuthHost();
                     }
@@ -103,7 +103,7 @@ public class ConfigAgent {
                         authHost = authHost.concat("/");
                     }
 
-                    String accountsHost = config.get(name.concat(".accountsHost"));
+                    String accountsHost = config.get("accountsHost");
                     if (accountsHost == null) {
                         accountsHost = VersionUtil.DEFAULT.getAccountsHost();
                     }
@@ -111,7 +111,7 @@ public class ConfigAgent {
                         accountsHost = accountsHost.concat("/");
                     }
 
-                    String sessionHost = config.get(name.concat(".sessionHost"));
+                    String sessionHost = config.get("sessionHost");
                     if (sessionHost == null) {
                         sessionHost = VersionUtil.DEFAULT.getSessionHost();
                     }
@@ -128,7 +128,7 @@ public class ConfigAgent {
                     ));
                     break;
                 case BLESSING_SKIN:
-                    String apiRoot = config.get(name.concat(".apiRoot"));
+                    String apiRoot = config.get("apiRoot");
                     if (apiRoot == null) {
                         MultiYggdrasil.LOGGER.warn("The apiRoot of BlessingSkin Yggdrasil source {} is not set. Skipped.", name);
                         continue;
