@@ -60,9 +60,8 @@ The requirements of these host-like specific values for “OFFICIAL” type are 
 | 7.0.61        | 1.21.9~1.21.11 |    ❌     |      ❌       |      ✅      |      ✅       |      ✅       |
 
 ## Version Supporting
-|   Minecraft    | Forge | Fabric | NeoForge |
-|:--------------:|:-----:|:------:|:--------:|
-|    1.14.4-     |   ❌   |   ❌    |    ❌     |
-| 1.14.4~1.20.1  |   ✅   |   ✅    |    ❌     |
-| 1.20.1~1.20.6  |   ✅   |   ✅    |    ✅     |
-| 1.21.1~1.21.11 |   ❌   |   ✅    |    ✅     |
+| Minecraft     | Forge | Fabric | NeoForge |
+|:--------------|:-----:|:------:|:--------:|
+| 1.14.4-       |   ❌   |   ❌    |    ❌     |
+| 1.14.4~1.19.4 |   ✅   |   ✅    |    ❌     |
+| 1.20.1~26.1   |   ✅   |   ✅    |    ✅     |
