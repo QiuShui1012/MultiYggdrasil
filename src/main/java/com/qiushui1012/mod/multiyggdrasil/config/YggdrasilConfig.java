@@ -29,7 +29,7 @@ public record YggdrasilConfig(List<BaseYggdrasilSource> sources) {
         new BlessingSkinYggdrasilSource("LittleSkin", "https://littleskin.cn/api/yggdrasil/", 1),
         new BlessingSkinYggdrasilSource("ElyBy", "https://account.ely.by/api/authlib-injector/", 2)
     ));
-    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("multi-yggdrasil.toml");
+    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("multi-yggdrasil.ini");
 
     public void save() {
         ConfigAgent.save(PATH, this);
