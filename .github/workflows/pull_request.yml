@@ -1,0 +1,43 @@
+name: Pull Request Check
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - releases/**
+      - dev/**
+    paths:
+      - .github/workflows/pull_request.yml
+      - .github/workflows/setup.yml
+      - .github/workflows/build_and_test.yml
+      - src/**
+      - versions/**
+      - gradle/**
+      - build.gradle
+      - dependencies.gradle
+      - gradle.properties
+      - settings.gradle
+      - settings.json
+
+jobs:
+  setup:
+    name: Setup Environment
+    uses: ./.github/workflows/setup.yml
+
+  build:
+    name: Build Version ${{ matrix.version }}
+    permissions: write-all
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(needs.setup.outputs.versions).versions }}
+    uses: ./.github/workflows/build_and_test.yml
+    with:
+      version: ${{ matrix.version }}
+      version_type: alpha
+      ci_build: false
+      pr_build: true
+      mod_id: "${{ needs.setup.outputs.mod_id }}"
+      mod_name: "${{ needs.setup.outputs.mod_name }}"
+      gametest: true
+    secrets: inherit

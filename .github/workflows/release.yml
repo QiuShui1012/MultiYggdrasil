@@ -1,0 +1,29 @@
+name: Update Release Assets
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+jobs:
+  setup:
+    name: Setup Environment
+    uses: ./.github/workflows/setup.yml
+
+  build:
+    name: Build Version ${{ matrix.version }}
+    permissions: write-all
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(needs.setup.outputs.versions).versions }}
+    uses: ./.github/workflows/build_and_test.yml
+    with:
+      version: ${{ matrix.version }}
+      version_type: ${{ github.event.release.prerelease && 'beta' || 'release' }}
+      ci_build: false
+      pr_build: false
+      mod_id: "${{ needs.setup.outputs.mod_id }}"
+      mod_name: "${{ needs.setup.outputs.mod_name }}"
+    secrets: inherit
