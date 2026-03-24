@@ -17,10 +17,12 @@ preprocess {
     mc12004_fabric.link(mc12004_forge, null)
 
     var mc12004_neoforge = createNode("1.20.4-neoforge", 1_20_04, 'mojang')
+    var mc12006_neoforge = createNode("1.20.6-neoforge", 1_20_06, 'mojang')
     var mc12105_neoforge = createNode("1.21.5-neoforge", 1_21_05, 'mojang')
 
     mc12004_forge.link(mc12004_neoforge, null)
-    mc12004_neoforge.link(mc12105_neoforge, null)
+    mc12004_neoforge.link(mc12006_neoforge, null)
+    mc12006_neoforge.link(mc12105_neoforge, null)
 
     for (final def node in getNodes()) {
         findProject(node.project).ext.mcVersion = node.mcVersion
