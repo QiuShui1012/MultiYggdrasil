@@ -28,24 +28,24 @@ Same as other mods, there are only three steps:
 ## Configuration
 
 A template:
-```toml
-# This config is located at config/multi-yggdrasil.toml
-[SomeRandomMirror]                       # The name, can be set freely, has no impacts.
-type = "OFFICIAL"                        # The type, now has 2 types, "OFFICIAL" and "BLESSING_SKIN".
-authHost = "https://a.random.mirror"     # -|- The specific value of "OFFICIAL" type.
-accountsHost = "https://a.random.mirror" #  |  Requirements in below.
-sessionHost = "https://a.random.mirror"  #  |
-servicesHost = "https://a.random.mirror" #  |
-profilesHost = "https://a.random.mirror" # -|
-ordinal = 0                              # The ordinal, decided the order of use for this source
+```ini
+# This config is located at config/multi-yggdrasil.ini
+[SomeRandomMirror]                     # The name, can be set freely, has no impacts.
+type = OFFICIAL                        # The type, now has 2 types, "OFFICIAL" and "BLESSING_SKIN".
+authHost = https://a.random.mirror     # |- The specific value of "OFFICIAL" type.
+accountsHost = https://a.random.mirror # |  Requirements in below.
+sessionHost = https://a.random.mirror  # |
+servicesHost = https://a.random.mirror # |
+profilesHost = https://a.random.mirror # |
+ordinal = 0                            # The ordinal, decided the order of use for this source
 
 [MojangOfficial]
-type = "OFFICIAL"                        # When using "OFFICIAL" type, there can be no host-like property,
-ordinal = 1                              # and it will use the official API.
+type = OFFICIAL                        # When using "OFFICIAL" type, there can be no host-like property,
+ordinal = 1                            # and it will use the official API.
 
 [LittleSkin]
-type = "BLESSING_SKIN"                   # ↙ The specific value of "BLESSING_SKIN" type.
-apiRoot = "https://littleskin.cn/api/yggdrasil/"
+type = BLESSING_SKIN                   # ↙ The specific value of "BLESSING_SKIN" type.
+apiRoot = https://littleskin.cn/api/yggdrasil/
 ordinal = 2
 ```
 

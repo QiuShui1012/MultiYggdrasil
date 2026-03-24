@@ -1,0 +1,36 @@
+name: Setup Environment
+on:
+  workflow_call:
+    outputs:
+      mod_id:
+        value: ${{ jobs.setup.outputs.mod_id }}
+      mod_name:
+        value: ${{ jobs.setup.outputs.mod_name }}
+      versions:
+        value: ${{ jobs.setup.outputs.versions }}
+
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      mod_id: ${{ steps.properties.outputs.mod-id }}
+      mod_name: ${{ steps.properties.outputs.mod-name }}
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Read Properties
+        id: 'properties'
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: gradle.properties
+          properties: 'mod.id mod.name'
+
+      - name: Setup Versions
+        id: versions
+        run: |
+          VERSIONS=$(cat ./settings.json | tr -d '\r\n' | tr -d ' ')
+          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT

@@ -1,0 +1,16 @@
+package com.qiushui1012.mod.multiyggdrasil.mixin;
+
+import net.minecraft.server.MinecraftServer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import com.qiushui1012.mod.multiyggdrasil.MultiYggdrasil;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+@Mixin(MinecraftServer.class)
+abstract class LogicalServerSaveMixin {
+    @Inject(method = "saveAllChunks", at = @At("RETURN"))
+    private void saveConfig(boolean bl, boolean bl2, boolean bl3, CallbackInfoReturnable<Boolean> cir) {
+        MultiYggdrasil.SERVERS_CONFIG.save();
+    }
+}

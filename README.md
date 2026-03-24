@@ -27,24 +27,24 @@ MultiYggdrasil 是一个运行于 Forge | Fabric | NeoForge 的模组。
 ## 配置
 
 一个模板：
-```toml
-# 该配置路径位于 config/multi-yggdrasil.toml
-[SomeRandomMirror]                       # *名称，可随意设置，无影响
-type = "OFFICIAL"                        # *类型，目前支持“OFFICIAL”和“BLESSING_SKIN”
-authHost = "https://a.random.mirror"     # “OFFICIAL”类型的特定值，需求见下表
-accountsHost = "https://a.random.mirror" # “OFFICIAL”类型的特定值，需求见下表
-sessionHost = "https://a.random.mirror"  # “OFFICIAL”类型的特定值，需求见下表
-servicesHost = "https://a.random.mirror" # “OFFICIAL”类型的特定值，需求见下表
-profilesHost = "https://a.random.mirror" # “OFFICIAL”类型的特定值，需求见下表
-ordinal = 0                              # *序号，决定了该来源的使用顺序
+```ini
+# 该配置路径位于 config/multi-yggdrasil.ini
+[SomeRandomMirror]                     # *名称，可随意设置，无影响
+type = OFFICIAL                        # *类型，目前支持“OFFICIAL”和“BLESSING_SKIN”
+authHost = https://a.random.mirror     # “OFFICIAL”类型的特定值，需求见下表
+accountsHost = https://a.random.mirror # “OFFICIAL”类型的特定值，需求见下表
+sessionHost = https://a.random.mirror  # “OFFICIAL”类型的特定值，需求见下表
+servicesHost = https://a.random.mirror # “OFFICIAL”类型的特定值，需求见下表
+profilesHost = https://a.random.mirror # “OFFICIAL”类型的特定值，需求见下表
+ordinal = 0                            # *序号，决定了该来源的使用顺序
 
 [MojangOfficial]
-type = "OFFICIAL"                        # “OFFICIAL”类型可以没有Host属性值，此时会使用官方API
+type = OFFICIAL                        # “OFFICIAL”类型可以没有Host属性值，此时会使用官方API
 ordinal = 1
 
 [LittleSkin]
-type = "BLESSING_SKIN"                   # ↙ *“BLESSING_SKIN”类型的特定值
-apiRoot = "https://littleskin.cn/api/yggdrasil/"  
+type = BLESSING_SKIN                   # ↙ *“BLESSING_SKIN”类型的特定值
+apiRoot = https://littleskin.cn/api/yggdrasil/  
 ordinal = 2
 ```
 
