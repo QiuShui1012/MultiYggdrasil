@@ -3,8 +3,8 @@ package com.qiushui1012.mod.multiyggdrasil.auth;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.yggdrasil.ServicesKeyInfo;
 import com.mojang.logging.LogUtils;
-import org.slf4j.Logger;
 import com.qiushui1012.mod.multiyggdrasil.util.ParseUtil;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -23,16 +23,11 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-//#if MC < 11800
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-//#else
-//$$ import com.mojang.logging.LogUtils;
-//$$ import org.slf4j.Logger;
-//#endif
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 public class MultiYggdrasilGameProfileRepo implements GameProfileRepository {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int ENTRIES_PER_PAGE = 2;
     private static final int MAX_FAIL_COUNT_PER_ENV = 3;
     private static final int DELAY_BETWEEN_PAGES = 100;

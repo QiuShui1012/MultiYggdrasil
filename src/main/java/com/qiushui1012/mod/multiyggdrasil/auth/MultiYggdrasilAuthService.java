@@ -9,9 +9,9 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.qiushui1012.mod.multiyggdrasil.MultiYggdrasil;
 import com.qiushui1012.mod.multiyggdrasil.source.BaseYggdrasilSource;
-import com.qiushui1012.mod.multiyggdrasil.util.vap.Patterns;
 import lombok.Getter;
 
 import java.net.Proxy;
@@ -19,16 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//#if MC < 11800
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-//#else
-//$$ import com.mojang.logging.LogUtils;
-//$$ import org.slf4j.Logger;
-//#endif
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 
 public class MultiYggdrasilAuthService extends YggdrasilAuthenticationService {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private final List<Environment> environments;
     @Getter
@@ -47,7 +42,7 @@ public class MultiYggdrasilAuthService extends YggdrasilAuthenticationService {
     private static List<Environment> determineEnvironment() {
         List<BaseYggdrasilSource> envs = MultiYggdrasil.SERVERS_CONFIG.sources();
         if (envs.isEmpty()) return Lists.newArrayList(
-            EnvironmentParser.getEnvironmentFromProperties().orElse(Patterns.getDefaultEnv())
+            EnvironmentParser.getEnvironmentFromProperties().orElse(YggdrasilEnvironment.PROD.getEnvironment())
         );
         Collections.sort(envs);
         List<Environment> result = new ArrayList<>();
