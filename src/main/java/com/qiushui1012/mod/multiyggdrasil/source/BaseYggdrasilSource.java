@@ -35,8 +35,8 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
     public Environment toEnvironment() {
         return VersionUtil.createEnv(
             this.getAccountRoot(),
-            this.getSessionRoot(),
             this.getServicesRoot(),
+            this.getSessionRoot(),
             this.getName()
         );
     }

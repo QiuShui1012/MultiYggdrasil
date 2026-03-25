@@ -12,10 +12,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import com.qiushui1012.mod.multiyggdrasil.auth.MultiYggdrasilServicesKeyInfo;
 import com.qiushui1012.mod.multiyggdrasil.util.ParseUtil;
@@ -66,7 +68,7 @@ public class ConfigAgent {
             MultiYggdrasil.LOGGER.warn("Cannot load config. Use default config.", e);
             for (BaseYggdrasilSource source : YggdrasilConfig.DEFAULT.sources()) {
                 if (source instanceof BlessingSkinYggdrasilSource blessing) {
-                    ParseUtil.getPublicKey(blessing.getApiRoot()).ifPresent(MultiYggdrasilServicesKeyInfo.PUBLIC_KEYS::add);
+                    ConfigAgent.addPublicKey(blessing.getName(), blessing.getApiRoot());
                 }
             }
             return YggdrasilConfig.DEFAULT;
@@ -109,24 +111,24 @@ public class ConfigAgent {
                     if (accountsHost == null) {
                         accountsHost = YggdrasilEnvironment.PROD.getEnvironment().accountsHost();
                     }
-                    if (!accountsHost.endsWith("/")) {
-                        accountsHost = accountsHost.concat("/");
+                    if (accountsHost.endsWith("/")) {
+                        accountsHost = accountsHost.substring(0, accountsHost.length() - 1);
                     }
 
                     String sessionHost = config.get("sessionHost");
                     if (sessionHost == null) {
                         sessionHost = YggdrasilEnvironment.PROD.getEnvironment().sessionHost();
                     }
-                    if (!sessionHost.endsWith("/")) {
-                        sessionHost = sessionHost.concat("/");
+                    if (sessionHost.endsWith("/")) {
+                        sessionHost = sessionHost.substring(0, sessionHost.length() - 1);
                     }
 
                     String servicesHost = config.get("servicesHost");
                     if (servicesHost == null) {
                         servicesHost = YggdrasilEnvironment.PROD.getEnvironment().servicesHost();
                     }
-                    if (!servicesHost.endsWith("/")) {
-                        servicesHost = servicesHost.concat("/");
+                    if (servicesHost.endsWith("/")) {
+                        servicesHost = servicesHost.substring(0, servicesHost.length() - 1);
                     }
 
                     sources.add(new OfficialYggdrasilSource(
@@ -146,10 +148,20 @@ public class ConfigAgent {
                     if (!apiRoot.endsWith("/")) {
                         apiRoot = apiRoot.concat("/");
                     }
-                    ParseUtil.getPublicKey(apiRoot).ifPresent(MultiYggdrasilServicesKeyInfo.PUBLIC_KEYS::add);
+                    ConfigAgent.addPublicKey(name, apiRoot);
                     sources.add(new BlessingSkinYggdrasilSource(name, apiRoot, ordinal));
             }
         }
         return new YggdrasilConfig(sources);
+    }
+
+    private static void addPublicKey(String name, String blessingApiRoot) {
+        Optional<PublicKey> key = ParseUtil.getPublicKey(blessingApiRoot);
+        if (key.isEmpty()) {
+            MultiYggdrasil.LOGGER.warn("Cannot fetch key from source {}.", name);
+            return;
+        }
+        MultiYggdrasilServicesKeyInfo.PUBLIC_KEYS.add(key.get());
+        MultiYggdrasil.LOGGER.debug("Successfully fetched public key from source {}.", name);
     }
 }
