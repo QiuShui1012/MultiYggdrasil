@@ -100,7 +100,7 @@ public class ConfigAgent {
                         authHost = VersionUtil.DEFAULT.getAuthHost();
                     }
                     if (!authHost.endsWith("/")) {
-                        authHost = authHost.concat("/");
+                        authHost = authHost.substring(0, authHost.length() - 1);
                     }
 
                     String accountsHost = config.get("accountsHost");
@@ -108,7 +108,7 @@ public class ConfigAgent {
                         accountsHost = VersionUtil.DEFAULT.getAccountsHost();
                     }
                     if (!accountsHost.endsWith("/")) {
-                        accountsHost = accountsHost.concat("/");
+                        accountsHost = accountsHost.substring(0, accountsHost.length() - 1);
                     }
 
                     String sessionHost = config.get("sessionHost");
@@ -116,7 +116,7 @@ public class ConfigAgent {
                         sessionHost = VersionUtil.DEFAULT.getSessionHost();
                     }
                     if (!sessionHost.endsWith("/")) {
-                        sessionHost = sessionHost.concat("/");
+                        sessionHost = sessionHost.substring(0, sessionHost.length() - 1);
                     }
 
                     sources.add(new OfficialYggdrasilSource(

@@ -9,8 +9,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "mixins.multiyggdrasil.refmap.json",
-  "client": [
-    "PhysicalClientStartMixin"
-  ]
+  "refmap": "mixins.multiyggdrasil.refmap.json"
 }
