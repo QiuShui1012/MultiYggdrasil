@@ -38,8 +38,8 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
         return VersionUtil.createEnv(
             this.getAuthRoot(),
             this.getAccountRoot(),
-            this.getSessionRoot(),
             this.getServicesRoot(),
+            this.getSessionRoot(),
             this.getName()
         );
     }
