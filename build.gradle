@@ -7,24 +7,22 @@ plugins {
 preprocess {
     strictExtraMappings = false
 
-    var mc12004_fabric = createNode("1.20.4-fabric", 1_20_04, 'mojang')
-    var mc12105_fabric = createNode("1.21.5-fabric", 1_21_05, 'mojang')
+    var mc12110_fabric = createNode("1.21.10-fabric", 1_21_10, 'mojang')
+//    var mc2601_fabric = createNode("26.1-fabric", 26_01_00, 'mojang')
 
-    mc12004_fabric.link(mc12105_fabric, null)
+//    mc12110_fabric.link(mc2601_fabric, null)
 
-    var mc12004_forge = createNode("1.20.4-forge", 1_20_04, 'mojang')
-    var mc12105_forge = createNode("1.21.5-forge", 1_21_05, 'mojang')
+    var mc12110_forge = createNode("1.21.10-forge", 1_21_10, 'mojang')
+//    var mc2601_forge = createNode("26.1-forge", 26_01_00, 'mojang')
 
-    mc12004_fabric.link(mc12004_forge, null)
-    mc12004_forge.link(mc12105_forge, null)
+    mc12110_fabric.link(mc12110_forge, null)
+//    mc12110_forge.link(mc2601_forge, null)
 
-    var mc12004_neoforge = createNode("1.20.4-neoforge", 1_20_04, 'mojang')
-    var mc12006_neoforge = createNode("1.20.6-neoforge", 1_20_06, 'mojang')
-    var mc12105_neoforge = createNode("1.21.5-neoforge", 1_21_05, 'mojang')
+    var mc12110_neoforge = createNode("1.21.10-neoforge", 1_21_10, 'mojang')
+//    var mc2601_neoforge = createNode("26.1-neoforge", 26_01_00, 'mojang')
 
-    mc12004_forge.link(mc12004_neoforge, null)
-    mc12004_neoforge.link(mc12006_neoforge, null)
-    mc12006_neoforge.link(mc12105_neoforge, null)
+    mc12110_forge.link(mc12110_neoforge, null)
+//    mc12110_neoforge.link(mc2601_neoforge, null)
 
     for (final def node in getNodes()) {
         findProject(node.project).ext.mcVersion = node.mcVersion
@@ -74,37 +72,8 @@ ext {
         }
     }
 
-    getVersion = { Project proj ->
+    getModVersion = { Project proj ->
         return "${proj.property("mod.version")}${getVersionSuffix()}"
-    }
-}
-
-tasks.register("genLocalProperties") {
-    it.group("${project.property("mod.id")}")
-
-    doFirst {
-        File localPropsFile = file("${rootDir}/local.properties")
-
-        if (localPropsFile.exists()) {
-            throw new IllegalStateException("local.properties file already generated. If you want to regenerate it, please delete it manually first")
-        } else {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(localPropsFile))
-            bufferedWriter.writeLine("# Secrets")
-            bufferedWriter.writeLine("secrets.gpg.signingKey=")
-            bufferedWriter.writeLine("secrets.gpg.signingPassword=")
-            bufferedWriter.writeLine("secrets.mavenCentral.username=")
-            bufferedWriter.writeLine("secrets.mavenCentral.password=")
-            bufferedWriter.writeLine('')
-            bufferedWriter.writeLine("# Overwritten configurations")
-            bufferedWriter.writeLine("ow.build.environment.local=")
-            bufferedWriter.writeLine("ow.build.environment.buildType=")
-            bufferedWriter.writeLine("ow.game.window.width=")
-            bufferedWriter.writeLine("ow.game.window.height=")
-            bufferedWriter.writeLine("ow.game.window.username=")
-            bufferedWriter.close()
-
-            project.getLogger().info("local.properties generated successfully!")
-        }
     }
 }
 

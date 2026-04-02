@@ -123,10 +123,19 @@ public class ConfigAgent {
                         servicesHost = servicesHost.substring(0, servicesHost.length() - 1);
                     }
 
+                    String profilesHost = config.get("profilesHost");
+                    if (profilesHost == null) {
+                        profilesHost = YggdrasilEnvironment.PROD.getEnvironment().profilesHost();
+                    }
+                    if (profilesHost.endsWith("/")) {
+                        profilesHost = profilesHost.substring(0, profilesHost.length() - 1);
+                    }
+
                     sources.add(new OfficialYggdrasilSource(
                         name,
                         sessionHost,
                         servicesHost,
+                        profilesHost,
                         ordinal
                     ));
                     break;

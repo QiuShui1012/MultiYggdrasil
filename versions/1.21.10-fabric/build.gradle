@@ -6,10 +6,11 @@ plugins {
 }
 
 final int mcVersion = project.mcVersion
+final boolean unobfuscated = mcVersion >= 26_00_00
 final int authlibVersion = Integer.parseInt(project.property("dependencies.authlib_version") as String)
 final String modPlatform = project.modPlatform
 
-apply plugin: "gg.essential.loom"
+apply plugin: unobfuscated ? "gg.essential.loom-no-remap" : "gg.essential.loom-remap"
 apply plugin: "com.replaymod.preprocess"
 apply plugin: "io.freefair.lombok"
 
@@ -68,20 +69,19 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    shadowing
-    api.extendsFrom shadowing
-}
-
 dependencies {
     // Development environment
     minecraft("com.mojang:minecraft:${project.property("dependencies.minecraft_version")}")
-    mappings loom.officialMojangMappings()
+    if (!unobfuscated) mappings loom.officialMojangMappings()
 
     switch (modPlatform) {
         case "fabric":
             implementation "com.google.code.findbugs:jsr305:3.0.2"
-            modImplementation libs.fabric.loader
+            if (unobfuscated) {
+                implementation libs.fabric.loader
+            } else {
+                modImplementation libs.fabric.loader
+            }
             break
         case "forge":
             forge("net.minecraftforge:forge:${project.property("dependencies.minecraft_version")}-${project.property("dependencies.forge_version")}")
@@ -117,7 +117,7 @@ loom {
 
     mixin {
         add sourceSets.main, "mixins.${project.parent.property("mod.id")}.refmap.json"
-        useLegacyMixinAp = true
+        useLegacyMixinAp = !unobfuscated
     }
 
     if (modPlatform == "forge") {
@@ -149,19 +149,16 @@ loom {
 base {
     setArchivesName("${project.parent.property("mod.archives_base_name")}-${project.property("dependencies.minecraft_version")}-${modPlatform}")
     setGroup("${project.property("mod.maven_group")}")
-    setVersion(project.getVersion(project.parent))
+    setVersion(project.getModVersion(project.parent))
 }
 
 java {
     if (mcVersion > 26_00_00) {
         sourceCompatibility = JavaVersion.VERSION_25
         targetCompatibility = JavaVersion.VERSION_25
-    } else if (mcVersion > 1_21_04) {
+    } else {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    } else {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     withSourcesJar()
@@ -176,7 +173,7 @@ processResources {
     inputs.property("mod_license", project.parent.property("mod.license"))
     inputs.property("mod_name", project.parent.property("mod.name"))
     inputs.property("mod_sources", project.parent.property("mod.sources"))
-    inputs.property("mod_version", project.getVersion(this.project.parent))
+    inputs.property("mod_version", project.getModVersion(this.project.parent))
     inputs.property("java_version", java.sourceCompatibility.getMajorVersion())
 
     [
@@ -222,7 +219,7 @@ tasks.named('sourcesJar').configure {
 }
 
 tasks.named('shadowJar', ShadowJar).configure { ShadowJar it ->
-    configurations = [project.configurations.shadowing]
+    configurations = []
 
     from(rootProject.file("LICENSE"))
     from(rootProject.file("LICENSE_authlib-injector"))

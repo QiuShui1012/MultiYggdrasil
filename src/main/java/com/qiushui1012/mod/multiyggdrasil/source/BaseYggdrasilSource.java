@@ -23,6 +23,8 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
 
     public abstract String getServicesRoot();
 
+    public abstract String getProfilesRoot();
+
     public abstract List<String> serialize();
 
     @Override
@@ -34,6 +36,7 @@ public abstract class BaseYggdrasilSource implements Comparable<BaseYggdrasilSou
         return VersionUtil.createEnv(
             this.getServicesRoot(),
             this.getSessionRoot(),
+            this.getProfilesRoot(),
             this.getName()
         );
     }

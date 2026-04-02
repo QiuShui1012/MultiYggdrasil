@@ -137,7 +137,7 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
                 final GameProfile result = new GameProfile(response.id(), profileName);
 
                 if (response.properties() != null) {
-                    result.getProperties().putAll(response.properties());
+                    result.properties().putAll(response.properties());
                 }
 
                 final Set<ProfileActionType> profileActions = response.profileActions().stream()
@@ -158,7 +158,7 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
     @Nullable
     @Override
     public Property getPackedTextures(final GameProfile profile) {
-        return Iterables.getFirst(profile.getProperties().get("textures"), null);
+        return Iterables.getFirst(profile.properties().get("textures"), null);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
                 return null;
             }
 
-            final GameProfile profile = response.toProfile();
+            final GameProfile profile = response.profile();
             final Set<ProfileActionType> profileActions = response.profileActions().stream()
                 .map(ProfileAction::type)
                 .collect(Collectors.toSet());

@@ -30,6 +30,11 @@ public class BlessingSkinYggdrasilSource extends BaseYggdrasilSource {
     }
 
     @Override
+    public String getProfilesRoot() {
+        return this.apiRoot + "profiles";
+    }
+
+    @Override
     public List<String> serialize() {
         List<String> result = new ArrayList<>();
         result.add("type = " + YggdrasilSourceType.BLESSING_SKIN.name());

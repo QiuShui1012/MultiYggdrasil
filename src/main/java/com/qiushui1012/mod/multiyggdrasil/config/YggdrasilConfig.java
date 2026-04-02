@@ -23,6 +23,7 @@ public record YggdrasilConfig(List<BaseYggdrasilSource> sources) {
             "MojangOfficial",
             YggdrasilEnvironment.PROD.getEnvironment().sessionHost(),
             YggdrasilEnvironment.PROD.getEnvironment().servicesHost(),
+            YggdrasilEnvironment.PROD.getEnvironment().profilesHost(),
             0
         ),
         new BlessingSkinYggdrasilSource("LittleSkin", "https://littleskin.cn/api/yggdrasil/", 1),
