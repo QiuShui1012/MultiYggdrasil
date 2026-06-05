@@ -39,7 +39,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 
 public class RequestUtil {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -115,7 +114,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> @Nullable T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
+    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url, auth) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
