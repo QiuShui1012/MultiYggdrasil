@@ -1,6 +1,6 @@
 [versions]
 
-fabric-loader = "0.18.4"
+fabric-loader = "0.19.3"
 
 essential = "1.15.48"
 shadow = "9.4.0"
