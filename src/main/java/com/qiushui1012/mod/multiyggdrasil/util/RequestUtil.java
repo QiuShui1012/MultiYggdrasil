@@ -36,6 +36,8 @@ import java.util.UUID;
 //#if MC < 11800
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 //#else
 //$$ import com.mojang.logging.LogUtils;
 //$$ import org.slf4j.Logger;
@@ -58,7 +60,9 @@ public class RequestUtil {
         AuthenticationException exception = null;
         for (URL url : urls) {
             try {
-                return makeRequest(proxy, url, input, classOfT);
+                T result = makeRequest(proxy, url, input, classOfT);
+                if (result == null) continue;
+                return result;
             } catch (AuthenticationException e) {
                 exception = e;
             }
@@ -70,7 +74,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
+    public static <T extends Response> @Nullable T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
