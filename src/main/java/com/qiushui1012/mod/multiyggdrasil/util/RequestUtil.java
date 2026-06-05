@@ -71,7 +71,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> T makeRequest(final Proxy proxy, final List<URL> urls, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
+    public static <T extends Response> T makeRequest(final Proxy proxy, final List<URL> urls, final Object input, final Class<T> classOfT, String auth) throws AuthenticationException {
         AuthenticationException exception = null;
         for (URL url : urls) {
             try {
@@ -89,7 +89,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> @Nullable T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
+    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
@@ -114,7 +114,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
+    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, String auth) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url, auth) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
@@ -170,7 +170,7 @@ public class RequestUtil {
         return sendRequest(url, connection);
     }
 
-    public static String performGetRequest(final Proxy proxy, final URL url, @Nullable final String auth) throws IOException {
+    public static String performGetRequest(final Proxy proxy, final URL url, final String auth) throws IOException {
         Validate.notNull(url);
         final HttpURLConnection connection = createUrlConnection(proxy, url);
 
