@@ -58,7 +58,9 @@ public class RequestUtil {
         AuthenticationException exception = null;
         for (URL url : urls) {
             try {
-                return makeRequest(proxy, url, input, classOfT);
+                T result = makeRequest(proxy, url, input, classOfT);
+                if (result == null) continue;
+                return result;
             } catch (AuthenticationException e) {
                 exception = e;
             }
@@ -74,7 +76,9 @@ public class RequestUtil {
         AuthenticationException exception = null;
         for (URL url : urls) {
             try {
-                return makeRequest(proxy, url, input, classOfT, auth);
+                T result = makeRequest(proxy, url, input, classOfT);
+                if (result == null) continue;
+                return result;
             } catch (AuthenticationException e) {
                 exception = e;
             }
@@ -86,7 +90,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
+    public static <T extends Response> @Nullable T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
@@ -111,7 +115,7 @@ public class RequestUtil {
         }
     }
 
-    public static <T extends Response> T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
+    public static <T extends Response> @Nullable T makeRequest(final Proxy proxy, final URL url, final Object input, final Class<T> classOfT, @Nullable String auth) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? performGetRequest(proxy, url, auth) : performPostRequest(proxy, url, gson.toJson(input), "application/json");
             final T result = gson.fromJson(jsonResult, classOfT);
