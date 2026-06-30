@@ -54,21 +54,23 @@ public class RequestUtil {
     }
 
     public static <T extends Response> T makeRequest(final Proxy proxy, final List<URL> urls, final Object input, final Class<T> classOfT) throws AuthenticationException {
-        AuthenticationException exception = null;
+        AuthenticationException lastException = null;
+
         for (URL url : urls) {
             try {
                 T result = makeRequest(proxy, url, input, classOfT);
                 if (result == null) continue;
                 return result;
             } catch (AuthenticationException e) {
-                exception = e;
+                lastException = e;
             }
         }
-        if (exception != null) {
-            throw exception;
-        } else {
-            throw new AuthenticationException("No valid URLs");
+
+        if (lastException != null) {
+            throw lastException;
         }
+
+        return null;
     }
 
     public static <T extends Response> T makeRequest(final Proxy proxy, final List<URL> urls, final Object input, final Class<T> classOfT, String auth) throws AuthenticationException {
