@@ -32,6 +32,7 @@ import com.mojang.authlib.yggdrasil.response.MinecraftTexturesPayload;
 import com.mojang.authlib.yggdrasil.response.ProfileAction;
 import com.mojang.logging.LogUtils;
 import com.mojang.util.UUIDTypeAdapter;
+import com.mojang.util.UndashedUuid;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -122,35 +123,35 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
             arguments.put("ip", address.getHostAddress());
         }
 
-        try {
-            HasJoinedMinecraftServerResponse response;
-            response = null;
-            for (URL checkUrl : checkUrls) {
+        HasJoinedMinecraftServerResponse response;
+        response = null;
+        for (URL checkUrl : checkUrls) {
+            try {
                 final URL url = HttpAuthenticationService.concatenateURL(checkUrl, HttpAuthenticationService.buildQuery(arguments));
                 HasJoinedMinecraftServerResponse responseCache = client.get(url, HasJoinedMinecraftServerResponse.class);
                 if (responseCache == null) continue;
                 response = responseCache;
                 break;
-            }
-
-            if (response != null && response.id() != null) {
-                final GameProfile result = new GameProfile(response.id(), profileName);
-
-                if (response.properties() != null) {
-                    result.getProperties().putAll(response.properties());
+            } catch (final MinecraftClientException e) {
+                if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
+                    throw unavailable;
                 }
-
-                final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                    .map(ProfileAction::type)
-                    .collect(Collectors.toSet());
-                return new ProfileResult(result, profileActions);
-            } else {
                 return null;
             }
-        } catch (final MinecraftClientException e) {
-            if (e.toAuthenticationException() instanceof final AuthenticationUnavailableException unavailable) {
-                throw unavailable;
+        }
+
+        if (response != null && response.id() != null) {
+            final GameProfile result = new GameProfile(response.id(), profileName);
+
+            if (response.properties() != null) {
+                result.getProperties().putAll(response.properties());
             }
+
+            final Set<ProfileActionType> profileActions = response.profileActions().stream()
+                .map(ProfileAction::type)
+                .collect(Collectors.toSet());
+            return new ProfileResult(result, profileActions);
+        } else {
             return null;
         }
     }
@@ -208,42 +209,41 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
 
     @Nullable
     private ProfileResult fetchProfileUncached(final UUID profileId, final boolean requireSecure) {
-        try {
-            MinecraftProfilePropertiesResponse response = null;
-            for (String baseUrl : baseUrls) {
-                URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + profileId.toString().replace('-', ' '));
+        MinecraftProfilePropertiesResponse response = null;
+        for (String baseUrl : baseUrls) {
+            try {
+                URL url = HttpAuthenticationService.constantURL(baseUrl + "profile/" + UndashedUuid.toString(profileId));
                 url = HttpAuthenticationService.concatenateURL(url, "unsigned=" + !requireSecure);
                 MinecraftProfilePropertiesResponse responseCache = client.get(url, MinecraftProfilePropertiesResponse.class);
                 if (responseCache == null) continue;
                 response = responseCache;
                 break;
-            }
-
-            if (response == null) {
-                LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
+            } catch (final MinecraftClientException | IllegalArgumentException e) {
+                LOGGER.warn("Couldn't look up profile properties for {}", profileId, e);
                 return null;
             }
+        }
 
-            final GameProfile profile = response.toProfile();
-            final Set<ProfileActionType> profileActions = response.profileActions().stream()
-                .map(ProfileAction::type)
-                .collect(Collectors.toSet());
-
-            LOGGER.debug("Successfully fetched profile properties for {}", profile);
-            return new ProfileResult(profile, profileActions);
-        } catch (final MinecraftClientException | IllegalArgumentException e) {
-            LOGGER.warn("Couldn't look up profile properties for {}", profileId, e);
+        if (response == null) {
+            LOGGER.debug("Couldn't fetch profile properties for {} as the profile does not exist", profileId);
             return null;
         }
+
+        final GameProfile profile = response.toProfile();
+        final Set<ProfileActionType> profileActions = response.profileActions().stream()
+            .map(ProfileAction::type)
+            .collect(Collectors.toSet());
+
+        LOGGER.debug("Successfully fetched profile properties for {}", profile);
+        return new ProfileResult(profile, profileActions);
     }
 
     @Override
     public String getSecurePropertyValue(Property property) throws InsecurePublicKeyException {
         return switch (getPropertySignatureState(property)) {
-            case UNSIGNED ->
-                throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
-            case INVALID ->
-                throw new InsecurePublicKeyException.InvalidException("Property \"" + property.name() + "\" has been tampered with (signature invalid)");
+            case UNSIGNED -> throw new InsecurePublicKeyException.MissingException("Missing signature from \"" + property.name() + "\"");
+            case INVALID -> throw new InsecurePublicKeyException.InvalidException(
+                "Property \"" + property.name() + "\" has been tampered with (signature invalid)");
             case SIGNED -> property.value();
         };
     }
