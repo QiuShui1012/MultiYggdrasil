@@ -3,7 +3,7 @@
 fabric-loader = "0.18.4"
 
 essential = "1.15.48"
-shadow = "9.4.0"
+shadow = "9.4.3"
 preprocessor = "c5abb4fb12"
 lombok = "8.7.1"
 

@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     id "java"
     alias libs.plugins.shadow
@@ -224,7 +222,7 @@ tasks.named('sourcesJar').configure {
     dependsOn delombok
 }
 
-tasks.named('shadowJar', ShadowJar).configure { ShadowJar it ->
+tasks.named('shadowJar').configure { it ->
     configurations = [project.configurations.shadowing]
 
     from(rootProject.file("LICENSE"))

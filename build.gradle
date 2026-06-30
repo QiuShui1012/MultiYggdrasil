@@ -7,25 +7,29 @@ plugins {
 preprocess {
     strictExtraMappings = false
 
+    var mc11605_fabric = createNode("1.16.5-fabric", 1_16_05, 'mojang')
     var mc11701_fabric = createNode("1.17.1-fabric", 1_17_01, 'mojang')
     var mc11802_fabric = createNode("1.18.2-fabric", 1_18_02, 'mojang')
     var mc11902_fabric = createNode("1.19.2-fabric", 1_19_02, 'mojang')
     var mc11904_fabric = createNode("1.19.4-fabric", 1_19_04, 'mojang')
     var mc12001_fabric = createNode("1.20.1-fabric", 1_20_01, 'mojang')
 
+    mc11605_fabric.link(mc11701_fabric, null)
     mc11701_fabric.link(mc11802_fabric, null)
     mc11802_fabric.link(mc11902_fabric, null)
     mc11902_fabric.link(mc11904_fabric, null)
     mc11904_fabric.link(mc12001_fabric, null)
 
+    var mc11605_forge = createNode("1.16.5-forge", 1_16_05, 'mojang')
     var mc11701_forge = createNode("1.17.1-forge", 1_17_01, 'mojang')
     var mc11802_forge = createNode("1.18.2-forge", 1_18_02, 'mojang')
     var mc11902_forge = createNode("1.19.2-forge", 1_19_02, 'mojang')
     var mc11904_forge = createNode("1.19.4-forge", 1_19_04, 'mojang')
     var mc12001_forge = createNode("1.20.1-forge", 1_20_01, 'mojang')
 
-    mc11701_fabric.link(mc11701_forge, null)
+    mc11605_fabric.link(mc11605_forge, null)
 
+    mc11605_forge.link(mc11701_forge, null)
     mc11701_forge.link(mc11802_forge, null)
     mc11802_forge.link(mc11902_forge, null)
     mc11902_forge.link(mc11904_forge, null)
