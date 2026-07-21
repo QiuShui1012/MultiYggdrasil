@@ -10,7 +10,7 @@ final boolean unobfuscated = mcVersion >= 26_00_00
 final int authlibVersion = Integer.parseInt(project.property("dependencies.authlib_version") as String)
 final String modPlatform = project.modPlatform
 
-apply plugin: unobfuscated ? "gg.essential.loom-no-remap" : "gg.essential.loom-remap"
+apply plugin: unobfuscated ? "dev.architectury.loom-no-remap" : "dev.architectury.loom-remap"
 apply plugin: "com.replaymod.preprocess"
 apply plugin: "io.freefair.lombok"
 
@@ -153,12 +153,9 @@ base {
 }
 
 java {
-    if (mcVersion > 26_00_00) {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    } else {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(mcVersion >= 26_01_00 ? 25 : 21)
+        vendor = JvmVendorSpec.JETBRAINS
     }
 
     withSourcesJar()
@@ -249,14 +246,6 @@ tasks.withType(Javadoc).configureEach { Javadoc task ->
 
 tasks.withType(JavaCompile).configureEach { JavaCompile task ->
     task.options.encoding = "UTF-8"
-
-    if (mcVersion > 26_00_00) {
-        task.options.release.set(25)
-    } else if (mcVersion > 1_20_05) {
-        task.options.release.set(21)
-    } else {
-        task.options.release.set(17)
-    }
 }
 
 // Setup server default settings.
@@ -311,4 +300,4 @@ tasks.register("cleanRunServer", DefaultTask.class) {
     }
 }
 
-lombok.version = "1.18.34"
+lombok.version = "1.18.44"

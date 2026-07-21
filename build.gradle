@@ -1,5 +1,6 @@
 plugins {
-    alias libs.plugins.essential apply false
+    alias libs.plugins.architectury.remap apply false
+    alias libs.plugins.architectury.noremap apply false
     alias libs.plugins.preprocessor
     alias libs.plugins.lombok
 }
@@ -8,21 +9,27 @@ preprocess {
     strictExtraMappings = false
 
     var mc12110_fabric = createNode("1.21.10-fabric", 1_21_10, 'mojang')
-//    var mc2601_fabric = createNode("26.1-fabric", 26_01_00, 'mojang')
+    var mc260102_fabric = createNode("26.1.2-fabric", 26_01_02, 'mojang')
+    var mc260200_fabric = createNode("26.2-fabric", 26_02_00, 'mojang')
 
-//    mc12110_fabric.link(mc2601_fabric, null)
+    mc12110_fabric.link(mc260102_fabric, null)
+    mc260102_fabric.link(mc260200_fabric, null)
 
     var mc12110_forge = createNode("1.21.10-forge", 1_21_10, 'mojang')
-//    var mc2601_forge = createNode("26.1-forge", 26_01_00, 'mojang')
+    var mc260102_forge = createNode("26.1.2-forge", 26_01_02, 'mojang')
+    var mc260200_forge = createNode("26.2-forge", 26_02_00, 'mojang')
 
     mc12110_fabric.link(mc12110_forge, null)
-//    mc12110_forge.link(mc2601_forge, null)
+    mc12110_forge.link(mc260102_forge, null)
+    mc260102_forge.link(mc260200_forge, null)
 
     var mc12110_neoforge = createNode("1.21.10-neoforge", 1_21_10, 'mojang')
-//    var mc2601_neoforge = createNode("26.1-neoforge", 26_01_00, 'mojang')
+    var mc260102_neoforge = createNode("26.1.2-neoforge", 26_01_02, 'mojang')
+    var mc260200_neoforge = createNode("26.2-neoforge", 26_02_00, 'mojang')
 
     mc12110_forge.link(mc12110_neoforge, null)
-//    mc12110_neoforge.link(mc2601_neoforge, null)
+    mc12110_neoforge.link(mc260102_neoforge, null)
+    mc260102_neoforge.link(mc260200_neoforge, null)
 
     for (final def node in getNodes()) {
         findProject(node.project).ext.mcVersion = node.mcVersion
@@ -78,7 +85,7 @@ ext {
 }
 
 tasks.register("cleanPreprocessSources") {
-    it.group("${project.mod_id}")
+    it.group("${project.property("mod.id")}")
 
     doFirst {
         subprojects {
