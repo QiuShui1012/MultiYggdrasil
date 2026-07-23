@@ -5,7 +5,7 @@
     "LogicalServerSaveMixin",
     "PhysicalServerStartMixin"
   ],
-  "compatibilityLevel": "JAVA_${java_version}",
+  "compatibilityLevel": "JAVA_21",
   "injectors": {
     "defaultRequire": 1
   },
