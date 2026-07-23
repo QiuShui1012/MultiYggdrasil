@@ -45,11 +45,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup Java 21
-        uses: actions/setup-java@v5.2.0
+      - name: Read Properties
+        id: properties
+        uses: christian-draeger/read-properties@1.1.1
         with:
-          distribution: zulu
-          java-version: 21
+          path: versions/${{ inputs.version }}/gradle.properties
+          properties: 'dependencies.minecraft_dependency action.minecraft_version action.mod_loader action.loader_version action.java_version action.extra_mods'
+
+      - name: Setup JBR ${{ steps.properties.outputs.action-java_version }}
+        uses: actions/setup-java@v5.6.0
+        with:
+          distribution: jetbrains
+          java-version: ${{ steps.properties.outputs.action-java_version }}
 
       - name: Make Gradle Wrapper Executable
         if: ${{ runner.os != 'Windows' }}
@@ -60,13 +67,6 @@ jobs:
 
       - name: Build Subproject
         run: ./gradlew :${{ inputs.version }}:build
-
-      - name: Read Properties
-        id: properties
-        uses: christian-draeger/read-properties@1.1.1
-        with:
-          path: versions/${{ inputs.version }}/gradle.properties
-          properties: 'dependencies.minecraft_dependency action.minecraft_version action.mod_loader action.loader_version action.java_version action.extra_mods'
 
       - name: Get Version
         id: version
