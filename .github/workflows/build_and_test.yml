@@ -50,7 +50,8 @@ jobs:
         with:
           distribution: jetbrains
           java-version: |
-            21, 25
+            21
+            25
 
       - name: Make Gradle Wrapper Executable
         if: ${{ runner.os != 'Windows' }}
