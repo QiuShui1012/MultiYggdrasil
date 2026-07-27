@@ -50,8 +50,8 @@ jobs:
         with:
           distribution: jetbrains
           java-version: |
+            17
             21
-            25
 
       - name: Make Gradle Wrapper Executable
         if: ${{ runner.os != 'Windows' }}
@@ -106,6 +106,7 @@ jobs:
         with:
           files: |
             versions/${{ inputs.version }}/build/libs/${{ inputs.mod_id }}-${{ inputs.version }}-${{ steps.version.outputs.version }}.jar
+
       - name: Publish Mod
         uses: Kir-Antipov/mc-publish@v3.3
         continue-on-error: true
