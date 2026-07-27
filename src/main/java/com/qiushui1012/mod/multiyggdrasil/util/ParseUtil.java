@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.qiushui1012.mod.multiyggdrasil.MultiYggdrasil;
 
 import java.io.ByteArrayOutputStream;
@@ -33,11 +34,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -91,13 +96,44 @@ public class ParseUtil {
     }
 
     public static Optional<PublicKey> getPublicKey(String url) {
-        try (InputStream in = new URL(url).openConnection().getInputStream()) {
-            return Optional.ofNullable(GSON.fromJson(asString(asBytes(in)), JsonObject.class).getAsJsonPrimitive("signaturePublickey"))
-                .map(JsonPrimitive::getAsString)
-                .map(ParseUtil::parseSignaturePublicKey);
-        } catch (IOException e) {
-            MultiYggdrasil.LOGGER.error("Failed to fetch metadata: {}", String.valueOf(e));
-            throw new IllegalStateException(e);
+        MultiYggdrasil.LOGGER.info("Public Key URL: {}", url);
+
+        Throwable ex = null;
+        for (int i = 0; i < 5; i++) {
+            HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url)) // 这个URL可能会301跳转
+                    .timeout(Duration.ofSeconds(20))
+                    .GET()
+                    .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                // HttpClient已经自动完成了重定向，这里拿到的是最终响应
+
+                String content = response.body();
+                MultiYggdrasil.LOGGER.info("Response Code: {}", response.statusCode());
+                MultiYggdrasil.LOGGER.info("Response Body: {}", content);
+                return Optional.ofNullable(GSON.fromJson(content, JsonObject.class).getAsJsonPrimitive("signaturePublickey"))
+                    .map(JsonPrimitive::getAsString)
+                    .map(ParseUtil::parseSignaturePublicKey);
+            } catch (IOException | JsonSyntaxException e) {
+                MultiYggdrasil.LOGGER.error("Failed to fetch metadata", e);
+                throw new IllegalStateException(e);
+            } catch (InterruptedException e) {
+                MultiYggdrasil.LOGGER.warn("Failed to fetch metadata. Retrying... ({}/5)", i);
+                ex = e;
+            }
+            //#if MC >= 1_20_05
+            //$$ finally {
+            //$$     client.close();
+            //$$ }
+            //#endif
         }
+        MultiYggdrasil.LOGGER.error("Failed to fetch metadata", ex);
+        throw new IllegalStateException(ex);
     }
 }

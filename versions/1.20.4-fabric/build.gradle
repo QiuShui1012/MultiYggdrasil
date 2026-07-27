@@ -153,15 +153,9 @@ base {
 }
 
 java {
-    if (mcVersion > 26_00_00) {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    } else if (mcVersion > 1_21_04) {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    } else {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(mcVersion >= 1_20_05 ? 21 : 17)
+        vendor = JvmVendorSpec.JETBRAINS
     }
 
     withSourcesJar()

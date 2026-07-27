@@ -109,7 +109,7 @@ tasks.register("genLocalProperties") {
 }
 
 tasks.register("cleanPreprocessSources") {
-    it.group("${project.mod_id}")
+    it.group("${project.property("mod.id")}")
 
     doFirst {
         subprojects {

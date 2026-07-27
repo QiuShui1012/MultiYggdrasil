@@ -129,7 +129,7 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
             try {
                 final URL url = HttpAuthenticationService.concatenateURL(checkUrl, HttpAuthenticationService.buildQuery(arguments));
                 HasJoinedMinecraftServerResponse responseCache = client.get(url, HasJoinedMinecraftServerResponse.class);
-                if (responseCache == null) continue;
+                if (responseCache == null || responseCache.id() == null) continue;
                 response = responseCache;
                 break;
             } catch (final MinecraftClientException e) {
@@ -140,7 +140,7 @@ public class MultiYggdrasilMcSessionService implements MinecraftSessionService {
             }
         }
 
-        if (response != null && response.id() != null) {
+        if (response != null) {
             final GameProfile result = new GameProfile(response.id(), profileName);
 
             if (response.properties() != null) {

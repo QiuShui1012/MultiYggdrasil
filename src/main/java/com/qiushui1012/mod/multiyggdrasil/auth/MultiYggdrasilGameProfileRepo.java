@@ -106,7 +106,7 @@ public class MultiYggdrasilGameProfileRepo implements GameProfileRepository {
 
                 try {
                     final ProfileSearchResultsResponse response = client.post(
-                        HttpAuthenticationService.constantURL(searchPageUrl + "minecraft"),
+                        HttpAuthenticationService.constantURL(searchPageUrl),
                         request,
                         ProfileSearchResultsResponse.class
                     );
@@ -163,10 +163,12 @@ public class MultiYggdrasilGameProfileRepo implements GameProfileRepository {
     //$$ public Optional<GameProfile> findProfileByName(final String name) {
     //$$     for (String nameLookupUrl : this.nameLookupUrls) {
     //$$         try {
-    //$$             return Optional.ofNullable(client.get(
+    //$$             GameProfile profile = client.get(
     //$$                 HttpAuthenticationService.constantURL(nameLookupUrl + name.toLowerCase(Locale.ROOT)),
     //$$                 GameProfile.class
-    //$$             ));
+    //$$             );
+    //$$             if (profile == null) continue;
+    //$$             return Optional.of(profile);
     //$$         } catch (final MinecraftClientException ignored) {
     //$$         }
     //$$     }
